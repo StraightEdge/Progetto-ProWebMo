@@ -47,3 +47,15 @@ exports.config = {
 };
 ```
 Il file è fatto in questo modo, sostituire gli asterischi con l'utente e la password del vostro utente mysql con privilegi
+
+## Eseguire il progetto
+Per eseguire il progetto bisogna far partire sia il server che il progetto React con
+```npm start```
+
+## Gestione amministratori
+Non esiste una pagina di creazione di un utente amministratore quindi va fatta tramite mysql per esempio su phpMyAdmin.
+
+Se si vuole creare un Admin bisogna farlo prima nella tabella Amministrazione con i campi Nome, Cognome, etc che volete e poi anche nella tabella Autenticazione.
+
+In Autenticazione lasciate a `null` i campi MatStudente e MatDocente e mettete la matricola dell'Admin che avete appena creato in MatAdmin.
+Vi consiglio come password di copiare quella già con hashing di uno studente che avete creato normalmente dalla pagina di registrazione, o se ne volete una nuova usare uno strumento online che converte in SHA512
