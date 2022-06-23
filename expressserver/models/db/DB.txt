@@ -1,0 +1,84 @@
+Insegnamenti
+IDIns|Denominazione|CFU|SSD
+
+Gli insegnamenti hanno un ID, una denominazione, il numero di CFU (3/6/9/12) e un Settore Scientifico Disciplinare (SSD).
+------
+
+Corsi
+IDCorso|Denominazione|AnnoAccademico|TipoCorso|CFUTirocinio|CFUProvaFinale
+
+I CdS hanno un ID, una denominazione, un tipo (triennale, magistrale, ciclo unico) e l'indicazione di quanti CFU prevedono il tirocinio (3/6) e la prova finale (9/12).
+------
+
+Docenti
+Matricola|SSD|Email
+
+I Docenti hanno una matricola, un Settore Scientifico Disciplinare (SSD) e una Email.
+------
+
+AnagraficaDocenti
+Matricola|Nome|Cognome|Genere|DataNascita|LuogoNascita|CF
+
+Dati anagrafici di ogni docente, separati dalla tabella Docenti.
+------
+
+Erogazione
+IDIns|IDCorso|aScelta|Blocco|Anno|MatDocente|SchedaTrasparenza
+
+Associazione tra insegnamenti, i CdS e i docenti. Viene indicato anche l'anno per ogni singolo CdS e se è un insegnamento a scelta con relativo blocco.
+------
+
+Studenti
+Matricola|IDCorso|Anno|Email|Reddito|PrimaRata|SecondaRata
+
+Gli Studenti hanno una matricola, il CdS e l'anno al quale sono iscritti, il reddito familiare e l'indicazione se hanno pagato la prima e la seconda rata (la scadenza della seconda rata impedisce allo studente di sostenere esami).
+------
+
+AnagraficaStudenti
+Matricola|Nome|Cognome|Genere|DataNascita|LuogoNascita|CF
+
+Dati anagrafici di ogni studente, separati dalla tabella Studenti.
+------
+
+Esami
+IDEsame|IDInsegnamento|IDCorso|Data|Sede|Sessione|Appello
+
+Gli Esami hanno un loro ID, l'ID dell'Insegnamento e l'ID del Corso.
+Il Docente inserisce la data, la sede, la sessione (Estiva/Invernale/etc) e l'appello (Primo/Secondo/Terzo)
+------
+
+IscrizioneEsame
+IDEsame|Studente
+
+Associazione tra gli esami e gli studenti iscritti.
+------
+
+CarrieraStudenti
+Matricola|IDIns|IDEsame|Domande|Votazione|Verbalizzazione
+
+Carriera di ogni studente, con matricola dello stesso e ID dell'insegnamento e eventuale esame che hanno sostenuto.
+Il Docente carica domande e votazione, la verbalizzazione viene confermata dallo studente.
+------
+
+Ricevimenti
+IDRicev|IDInsegnamento|MatDocente|Data|Sede|Durata|NumStudenti
+
+I ricevimenti vengono creati dai docenti, hanno un loro ID e l'indicazione dell'insegnamento e del docente. Il docente inserisce anche una data, una sede, la durata ed il numero massimo di studenti accettati.
+------
+
+IscrizioneRicevimento
+IDRicev|Studente
+
+Associazione tra i ricevimenti e gli studenti iscritti.
+------
+
+Amministrazione
+Matricola|Nome|Cognome|Genere|DataNascita|LuogoNascita|CF|Email
+
+Dati degli utenti dell'amministrazione, che possono modificare i CdS e gli insegnamenti
+------
+
+Autenticazione
+NomeUtente|Password|MatStudente|MatDocente|MatAdmin
+
+Gestisce l'autenticazione di chi usufruisce del software, ogni utente ha un NomeUtente e una Password cifrata. Gli altri campi ci permettono di associare l'account ad uno studente, docente o admin dando funzioni e permessi diversi dipende dal tipo di utente.
