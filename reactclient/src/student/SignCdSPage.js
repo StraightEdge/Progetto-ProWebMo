@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Container, Form, InputGroup } from "react-bootstrap";
 
-function SignCdSPage({ auth }) {
+function SignCdSPage({ auth, setAuth }) {
   const [loaded, setLoaded] = useState(false);
   const [corsi, setCorsi] = useState([]);
   const [tipo, setTipo] = useState();
@@ -348,7 +348,7 @@ function SignCdSPage({ auth }) {
             name="ok"
             id="ok"
           >
-            Invia
+            Iscriviti
           </Button>
         </Form>
       </Container>

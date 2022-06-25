@@ -259,7 +259,7 @@ async function controlloCFU(req_body) {
           if (
             insegnamento.professor.Matricola == docente.MatDocente &&
             insegnamento.IDIns == docente.IDIns &&
-            docente.NumCorsi == 2
+            docente.NumCorsi > 1
           ) {
             returndata.errcode = 403;
             returndata.errmsg =
@@ -286,27 +286,114 @@ async function controlloCFU(req_body) {
           throw err;
         });
 
-      for (let insegnamento of req_body) {
-        for (let docente of results) {
-          if (
-            insegnamento.professor.Matricola == docente.MatDocente &&
-            insegnamento.CFU + parseInt(docente.SommaCFU) > 21
-          ) {
-            returndata.errcode = 403;
-            returndata.errmsg =
-              "Il Docente " +
-              docente.Cognome +
-              " " +
-              docente.Nome +
-              " eroga più di 21 CFU";
-            return returndata;
+      for (let docente of results) {
+        let totcfu = 0;
+        for (let insegnamento of req_body) {
+          if (insegnamento.professor.Matricola == docente.MatDocente) {
+            totcfu += insegnamento.CFU;
           }
+        }
+        if (totcfu + parseInt(docente.SommaCFU) > 21) {
+          returndata.errcode = 403;
+          returndata.errmsg =
+            "Il Docente " +
+            docente.Cognome +
+            " " +
+            docente.Nome +
+            " eroga più di 21 CFU";
+          return returndata;
         }
       }
     });
   } catch (err) {
-    console.log(err);
-    next(createError(500));
+    returndata.errcode = 500;
+    returndata.errmsg = "Impossibile controllare CFU";
+  }
+  return returndata;
+}
+
+async function controlloCFUModifica(req_body) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK" };
+  let results = {};
+
+  try {
+    // controllo se il Docente insegna la materia in due corsi
+    await withTransaction(db, async () => {
+      // controllo se sto modificando un corso o aggiungendo
+      // insegnamenti ad un altro corso
+      results = await db
+        .query(
+          "SELECT COUNT(`e`.IDCorso) as `NumCorsi`, `e`.IDIns, `e`.MatDocente\
+          FROM `Erogazione` `e`\
+          JOIN `Insegnamenti` `i` ON (`e`.IDIns = `i`.IDIns)\
+          WHERE `e`.IDCorso <> ?\
+          GROUP BY `e`.IDIns, `e`.MatDocente",
+          [req_body.idcorso]
+        )
+        .catch((err) => {
+          throw err;
+        });
+
+      for (let insegnamento of req_body) {
+        for (let docente of results) {
+          if (
+            insegnamento.professor.Matricola == docente.MatDocente &&
+            insegnamento.IDIns == docente.IDIns &&
+            docente.NumCorsi >= 2
+          ) {
+            returndata.errcode = 403;
+            returndata.errmsg =
+              "Insegnamento " +
+              insegnamento.Denominazione +
+              " già erogato in due corsi dallo stesso docente";
+            return returndata;
+          }
+        }
+      }
+
+      // controllo se il Docente eroga più di 21 CFU
+      results = await db
+        .query(
+          "SELECT SUM(`CFUDocenti`.CFU) AS `SommaCFU`, `CFUDocenti`.MatDocente, `ad`.Cognome, `ad`.Nome\
+          FROM (SELECT `i`.CFU, `e`.IDIns, `e`.MatDocente\
+          FROM `Erogazione` `e`\
+          JOIN `Insegnamenti` `i` ON (`e`.IDIns = `i`.IDIns)\
+          WHERE `e`.IDCorso <> ?\
+          GROUP BY `e`.IDIns, `e`.MatDocente) AS `CFUDocenti`\
+          JOIN `AnagraficaDocenti` `ad` ON (`CFUDocenti`.MatDocente = `ad`.`Matricola`)\
+          GROUP BY `CFUDocenti`.MatDocente",
+          [req_body.idcorso]
+        )
+        .catch((err) => {
+          throw err;
+        });
+
+      for (let docente of results) {
+        let totcfu = 0;
+        for (let insegnamento of req_body) {
+          if (insegnamento.professor.Matricola == docente.MatDocente) {
+            totcfu += insegnamento.CFU;
+          }
+        }
+        if (totcfu + parseInt(docente.SommaCFU) > 21) {
+          returndata.errcode = 403;
+          returndata.errmsg =
+            "Il Docente " +
+            docente.Cognome +
+            " " +
+            docente.Nome +
+            " eroga più di 21 CFU";
+          return returndata;
+        }
+      }
+    });
+  } catch (err) {
+    returndata.errcode = 500;
+    returndata.errmsg = "Impossibile controllare CFU";
   }
   return returndata;
 }
@@ -394,11 +481,183 @@ async function aggiungiCorso(req_body) {
   return returndata;
 }
 
+async function modificaCorso(req_body) {
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = {
+    errcode: 200,
+    errmsg: "OK",
+    corso: req_body.name + " " + req_body.academicyear,
+  };
+  let results = {};
+  try {
+    await withTransaction(db, async () => {
+      // verifica esistenza corso con lo stesso nome
+      results = await db
+        .query(
+          "SELECT * FROM `Corsi`\
+            WHERE Denominazione = ? AND AnnoAccademico = ? AND IDCorso <> ?",
+          [req_body.name, req_body.academicyear, req_body.idcorso]
+        )
+        .catch((err) => {
+          throw err;
+        });
+
+      if (results.length == 1) {
+        console.log("Corso di Studi con lo stesso nome già esistente!");
+        returndata.errcode = 403;
+        returndata.errmsg = "Corso di Studi con lo stesso nome già esistente!";
+      } else {
+        // controllo se esistono studenti iscritti al corso da modificare
+        results = await db
+          .query("SELECT * FROM `Studenti`\
+            WHERE IDCorso = ?", [
+            req_body.idcorso,
+          ])
+          .catch((err) => {
+            throw err;
+          });
+
+        if (results.length > 0) {
+          console.log(
+            "Ci sono studenti già iscritti al corso, impossibile modificarlo!"
+          );
+          returndata.errcode = 405;
+          returndata.errmsg =
+            "Ci sono studenti già iscritti al corso, impossibile modificarlo!";
+        } else {
+          // elimino l'abbinamento dei docenti con il vecchio corso
+          results = await db
+            .query("DELETE FROM `Erogazione` \
+            WHERE IDCorso = ?", [
+              req_body.idcorso,
+            ])
+            .catch((err) => {
+              throw err;
+            });
+
+          // modifica corso
+          results = await db
+            .query(
+              "UPDATE `Corsi` \
+            SET `Denominazione` = ?, `AnnoAccademico` = ?, `TipoCorso` = ?, \
+            `CFUTirocinio` = ?, `CFUProvaFinale` = ? \
+            WHERE `IDCorso` = ?",
+              [
+                req_body.name,
+                req_body.academicyear,
+                req_body.type,
+                req_body.cfutir,
+                req_body.cfupf,
+                parseInt(req_body.idcorso),
+              ]
+            )
+            .catch((err) => {
+              throw err;
+            });
+
+          // per ogni insegnamento abbino il docente che lo eroga
+          for (let insegnamento of req_body.insegnamentiinseriti) {
+            results = await db
+              .query(
+                "INSERT INTO `Erogazione` \
+        (IDIns, IDCorso, aScelta, Blocco, Anno, MatDocente, SchedaTrasparenza) \
+        SELECT ? AS IDIns, ? AS IDCorso, ? AS aScelta, ? AS Blocco, \
+        ? AS Anno, ? AS MatDocente, NULL AS SchedaTrasparenza",
+                [
+                  insegnamento.IDIns,
+                  req_body.idcorso,
+                  insegnamento.aScelta,
+                  insegnamento.Blocco === "" ? null : insegnamento.Blocco,
+                  insegnamento.Anno,
+                  insegnamento.professor.Matricola,
+                ]
+              )
+              .catch((err) => {
+                throw err;
+              });
+          }
+          console.log("Corso Modificato");
+        }
+      }
+    });
+  } catch (err) {
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile modificare Corso";
+  }
+  return returndata;
+}
+
+async function eliminaCorso(req_body) {
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = {
+    errcode: 200,
+    errmsg: "OK",
+    corso: req_body.name + " " + req_body.academicyear,
+  };
+  let results = {};
+  try {
+    await withTransaction(db, async () => {
+      // controllo se esistono studenti iscritti al corso da modificare
+      results = await db
+        .query("SELECT * FROM `Studenti`\
+            WHERE IDCorso = ?", [
+          req_body.idcorso,
+        ])
+        .catch((err) => {
+          throw err;
+        });
+
+      if (results.length > 0) {
+        console.log(
+          "Ci sono studenti già iscritti al corso, impossibile eliminarlo!"
+        );
+        returndata.errcode = 405;
+        returndata.errmsg =
+          "Ci sono studenti già iscritti al corso, impossibile eliminarlo!";
+      } else {
+        // elimino l'abbinamento dei docenti con il corso
+        results = await db
+          .query("DELETE FROM `Erogazione` \
+            WHERE IDCorso = ?", [
+            req_body.idcorso,
+          ])
+          .catch((err) => {
+            throw err;
+          });
+
+        // modifica corso
+        results = await db
+          .query("DELETE FROM `Corsi` \
+            WHERE IDCorso = ?", [
+            req_body.idcorso,
+          ])
+          .catch((err) => {
+            throw err;
+          });
+
+        console.log("Corso Eliminato");
+      }
+    });
+  } catch (err) {
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile eliminare Corso";
+  }
+  console.log(returndata);
+  return returndata;
+}
+
 module.exports = {
   aggiungiDocente,
   aggiungiInsegnamento,
   riceviInsegnamenti,
   riceviDocenti,
   controlloCFU,
+  controlloCFUModifica,
   aggiungiCorso,
+  modificaCorso,
+  eliminaCorso,
 };

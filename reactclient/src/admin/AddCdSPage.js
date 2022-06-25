@@ -190,6 +190,7 @@ function AddCdSPage({ auth }) {
             error: true,
             text: `Corso di studi ${res.corso} già esistente`,
           });
+          window.scrollTo(0, 0);
         } else if (res.status !== 200) {
           navigate("/error", {
             state: {
@@ -197,6 +198,7 @@ function AddCdSPage({ auth }) {
               message: res.message,
             },
           });
+          window.scrollTo(0, 0);
         } else {
           navigate("/landing", {
             state: {
@@ -793,7 +795,7 @@ function AddCdSPage({ auth }) {
           id="ok"
           onClick={handleSubmit}
         >
-          Invia
+          Crea Corso
         </Button>
       </Container>
     );
