@@ -134,4 +134,56 @@ async function insegnamentiattivi() {
   }
 }
 
-module.exports = { iscrizioneCds, corsidistudio, insegnamentiattivi };
+async function carriera(matricola) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", carreer: null };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // controllo se lo studente esiste
+      results = await db
+        .query("SELECT * FROM `Studenti`\
+        WHERE Matricola = ?", [
+          matricola,
+        ])
+        .catch((err) => {
+          throw err;
+        });
+
+      if (results.length == 0) {
+        console.log("Studente non trovato!");
+        returndata.errcode = 404;
+        returndata.errmsg = "Studente non trovato";
+      } else {
+        // recupero la carriera dello studente
+        results = await db
+          .query(
+            "SELECT `Anno`, `Denominazione`, `CFU`, `aScelta`, `Blocco`, \
+            `Esito`, `SchedaTrasparenza`\
+            FROM `CarrieraStudenti` `cs`\
+            JOIN `Insegnamenti` `i` ON (`i`.`IDIns` = `cs`.`IDIns`)\
+            JOIN `Erogazione` `e` ON (`e`.`IDIns` = `cs`.`IDIns`)\
+            WHERE Matricola = ?\
+            ORDER BY `Anno`",
+            [matricola]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        returndata.carreer = results;
+      }
+    });
+  } catch (err) {
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile recuperare carriera";
+  }
+
+  return returndata;
+}
+
+module.exports = { iscrizioneCds, corsidistudio, insegnamentiattivi, carriera };

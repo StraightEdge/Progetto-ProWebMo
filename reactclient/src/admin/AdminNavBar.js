@@ -15,6 +15,9 @@ function AdminNavBar() {
       <NavDropdown.Item as={Link} to="/admin/addCdS">
         Crea Corso di Studi
       </NavDropdown.Item>
+      <NavDropdown.Item as={Link} to="/admin/editCdS">
+        Modifica Corso di Studi
+      </NavDropdown.Item>
     </>
   );
 }

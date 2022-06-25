@@ -13,9 +13,12 @@ import ErrorPage from "./ErrorPage";
 import ProfilePage from "./ProfilePage";
 import LandingPage from "./LandingPage";
 import SignCdSPage from "./student/SignCdSPage";
+import MyCarreerPage from "./student/MyCarreerPage";
+import MyTeachingsPage from "./professor/MyTeachingsPage";
 import AddProfessorPage from "./admin/AddProfessorPage";
 import AddTeachingPage from "./admin/AddTeachingPage";
 import AddCdSPage from "./admin/AddCdSPage";
+import EditCdSPage from "./admin/EditCdSPage";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -71,6 +74,14 @@ function App() {
           element={<SignCdSPage auth={auth} setAuth={setAuth} />}
         />
         <Route
+          path="/students/myCarreer"
+          element={<MyCarreerPage auth={auth} setAuth={setAuth} />}
+        />
+        <Route
+          path="/professors/myTeachings"
+          element={<MyTeachingsPage auth={auth} setAuth={setAuth} />}
+        />
+        <Route
           path="/admin/addProfessor"
           element={<AddProfessorPage auth={auth} />}
         />
@@ -79,6 +90,7 @@ function App() {
           element={<AddTeachingPage auth={auth} />}
         />
         <Route path="/admin/addCdS" element={<AddCdSPage auth={auth} />} />
+        <Route path="/admin/editCdS" element={<EditCdSPage auth={auth} />} />
         <Route path="/error" element={<ErrorPage />} />
         <Route path="/landing" element={<LandingPage />} />
       </Routes>

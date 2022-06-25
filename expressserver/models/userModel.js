@@ -197,7 +197,7 @@ async function autenticazione(req_body) {
                 throw err;
               });
 
-            returndata.type = "teacher";
+            returndata.type = "professor";
           } else {
             results = await db
               .query(

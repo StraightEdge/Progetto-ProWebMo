@@ -496,7 +496,7 @@ function AddProfessorPage({ auth, setAuth }) {
             name="ok"
             id="ok"
           >
-            Invia
+            Aggiungi Docente
           </Button>
         </Form>
       </Container>

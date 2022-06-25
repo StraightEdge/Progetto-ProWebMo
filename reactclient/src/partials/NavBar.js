@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 
 import StudentNavBar from "../student/StudentNavBar";
+import ProfessorNavBar from "../professor/ProfessorNavBar";
 import AdminNavBar from "../admin/AdminNavBar";
 
 function NavBar({ auth, setAuth }) {
@@ -44,7 +45,8 @@ function NavBar({ auth, setAuth }) {
                   Profilo
                 </NavDropdown.Item>
                 {auth?.isStudent ? <StudentNavBar auth={auth} /> : <></>}
-                {auth?.isAdmin ? <AdminNavBar /> : <></>}
+                {auth?.isProfessor ? <ProfessorNavBar auth={auth} /> : <></>}
+                {auth?.isAdmin ? <AdminNavBar auth={auth} /> : <></>}
                 <NavDropdown.Item as={Link} to="/">
                   Home
                 </NavDropdown.Item>

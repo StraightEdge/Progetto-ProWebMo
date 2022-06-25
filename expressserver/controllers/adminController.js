@@ -6,7 +6,10 @@ const {
   riceviInsegnamenti,
   riceviDocenti,
   controlloCFU,
+  controlloCFUModifica,
   aggiungiCorso,
+  modificaCorso,
+  eliminaCorso,
 } = require("../models/adminModel");
 
 const secret = "mysecretsshhh";
@@ -123,6 +126,26 @@ async function check_prof_cfu(req, res) {
   }
 }
 
+async function check_prof_cfu_edit(req, res) {
+  try {
+    let results = await controlloCFUModifica(req.body);
+    if (results.errcode !== 200) {
+      res.json({
+        status: results.errcode,
+        message: results.errmsg,
+      });
+    } else {
+      res.json({
+        status: 200,
+        message: "Ok",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    next(createError(500));
+  }
+}
+
 async function add_cds(req, res) {
   const token = req.cookies.token;
   if (!token) {
@@ -158,11 +181,84 @@ async function add_cds(req, res) {
   }
 }
 
+async function edit_cds(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isAdmin) {
+          return modificaCorso(req.body);
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
+        }
+      })
+      .then((results) => {
+        if (results.errcode !== 200) {
+          res.json({
+            status: results.errcode,
+            message: results.errmsg,
+            corso: results.corso,
+          });
+        } else {
+          res.json({
+            status: 200,
+            message: "Ok",
+            corso: results.corso,
+          });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
+async function delete_cds(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isAdmin) {
+          return eliminaCorso(req.body);
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
+        }
+      })
+      .then((results) => {
+        if (results.errcode !== 200) {
+          res.json({
+            status: results.errcode,
+            message: results.errmsg,
+            corso: results.corso,
+          });
+        } else {
+          res.json({
+            status: 200,
+            message: "Ok",
+            corso: results.corso,
+          });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
 module.exports = {
   add_professor,
   add_teaching,
   get_teaching,
   get_professors,
   check_prof_cfu,
+  check_prof_cfu_edit,
   add_cds,
+  edit_cds,
+  delete_cds,
 };

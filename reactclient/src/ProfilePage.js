@@ -26,7 +26,7 @@ function ProfilePage({ auth, setAuth }) {
             setUser(res.token.nomeutente);
             if (res.token.isStudent) {
               setTipo("Studente");
-            } else if (res.token.isTeacher) {
+            } else if (res.token.isProfessor) {
               setTipo("Docente");
             } else {
               setTipo("Admin");

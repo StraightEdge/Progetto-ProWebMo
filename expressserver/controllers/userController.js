@@ -22,7 +22,7 @@ async function sign_on(req, res, next) {
       let tokendata = {
         nomeutente: results.user.NomeUtente,
         isStudent: true,
-        isTeacher: false,
+        isProfessor: false,
         isAdmin: false,
         data: {
           matricola: results.user.Matricola,
@@ -79,7 +79,7 @@ async function login(req, res, next) {
         tokendata = {
           nomeutente: results.user.NomeUtente,
           isStudent: true,
-          isTeacher: false,
+          isProfessor: false,
           isAdmin: false,
           data: {
             matricola: results.user.Matricola,
@@ -99,11 +99,11 @@ async function login(req, res, next) {
             reddito: results.user.Reddito,
           },
         };
-      } else if (results.type == "teacher") {
+      } else if (results.type == "professor") {
         tokendata = {
           nomeutente: results.user.NomeUtente,
           isStudent: false,
-          isTeacher: true,
+          isProfessor: true,
           isAdmin: false,
           data: {
             matricola: results.user.Matricola,
@@ -121,7 +121,7 @@ async function login(req, res, next) {
         tokendata = {
           nomeutente: results.user.NomeUtente,
           isStudent: false,
-          isTeacher: false,
+          isProfessor: false,
           isAdmin: true,
           data: {
             matricola: results.user.Matricola,
@@ -178,7 +178,7 @@ async function get_profile(req, res) {
           token: {
             nomeutente: decoded.nomeutente,
             isStudent: decoded.isStudent,
-            isTeacher: decoded.isTeacher,
+            isProfessor: decoded.isProfessor,
             isAdmin: decoded.isAdmin,
             data: decoded.data,
           },

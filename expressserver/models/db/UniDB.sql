@@ -114,6 +114,8 @@ CREATE TABLE IF NOT EXISTS `Studenti` (
   `Matricola` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `IDCorso` int UNSIGNED,
   `Anno` ENUM('1', '2', '3', '4', '5', 'Fuori Corso'),
+  `Tirocinio` boolean NOT NULL DEFAULT FALSE,
+  `ProvaFinale` boolean NOT NULL DEFAULT FALSE,
   `Email` varchar(100) NOT NULL,
   `Reddito` int UNSIGNED NOT NULL,
   `PrimaRata` boolean NOT NULL,
@@ -189,7 +191,7 @@ CREATE TABLE IF NOT EXISTS `CarrieraStudenti` (
   `IDIns` int UNSIGNED NOT NULL ,
   `IDEsame` int UNSIGNED ,
   `Domande` varchar(1000),
-  `Votazione` int UNSIGNED,
+  `Esito` int UNSIGNED,
   `Verbalizzazione` boolean,
   PRIMARY KEY (`Matricola`, `IDIns`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

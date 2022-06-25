@@ -29,9 +29,10 @@ Associazione tra insegnamenti, i CdS e i docenti. Viene indicato anche l'anno pe
 ------
 
 Studenti
-Matricola|IDCorso|Anno|Email|Reddito|PrimaRata|SecondaRata
+Matricola|IDCorso|Anno|Tirocinio|ProvaFinale|Email|Reddito|PrimaRata|SecondaRata
 
 Gli Studenti hanno una matricola, il CdS e l'anno al quale sono iscritti, il reddito familiare e l'indicazione se hanno pagato la prima e la seconda rata (la scadenza della seconda rata impedisce allo studente di sostenere esami).
+Inoltre è indicato se lo studente ha svolto il tirocinio o la prova finale.
 ------
 
 AnagraficaStudenti
@@ -54,7 +55,7 @@ Associazione tra gli esami e gli studenti iscritti.
 ------
 
 CarrieraStudenti
-Matricola|IDIns|IDEsame|Domande|Votazione|Verbalizzazione
+Matricola|IDIns|IDEsame|Domande|Esito|Verbalizzazione
 
 Carriera di ogni studente, con matricola dello stesso e ID dell'insegnamento e eventuale esame che hanno sostenuto.
 Il Docente carica domande e votazione, la verbalizzazione viene confermata dallo studente.

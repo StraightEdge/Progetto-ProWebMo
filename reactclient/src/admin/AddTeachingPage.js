@@ -131,7 +131,7 @@ function AddTeachingPage({ auth }) {
       <Container>
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
           <h2 className="text-center">Creazione Insegnamento</h2>
-          <InputGroup controlId="name">
+          <InputGroup >
             <InputGroup.Text>Denominazione</InputGroup.Text>
             <Form.Control
               name="name"
@@ -214,7 +214,7 @@ function AddTeachingPage({ auth }) {
             name="ok"
             id="ok"
           >
-            Invia
+            Aggiungi Insegnamento
           </Button>
         </Form>
       </Container>

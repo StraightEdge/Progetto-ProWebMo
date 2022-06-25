@@ -6,6 +6,7 @@ const {
   sign_Cds,
   get_Cds,
   get_CdsTeachings,
+  get_carreer,
 } = require("../controllers/studentController");
 
 /* La rotta /users è vietata */
@@ -21,5 +22,8 @@ router.get("/getCds", get_Cds);
 
 /* Recupero lista degli insegnamenti */
 router.get("/getCdsTeachings", get_CdsTeachings);
+
+/* Recupero carriera studente */
+router.get("/getCarriera", get_carreer);
 
 module.exports = router;

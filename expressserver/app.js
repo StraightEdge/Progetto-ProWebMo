@@ -13,6 +13,7 @@ const corsOptions = {
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var studentsRouter = require("./routes/students");
+var professorsRouter = require("./routes/professors");
 var adminsRouter = require("./routes/admins");
 
 var app = express();
@@ -33,6 +34,7 @@ app.options("*", cors(corsOptions));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/students", studentsRouter);
+app.use("/professors", professorsRouter);
 app.use("/admins", adminsRouter);
 
 // catch 404 and forward to error handler
