@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button, Container, Table } from "react-bootstrap";
+import { Alert, Button, ButtonGroup, Container, Table } from "react-bootstrap";
 
 function MyTeachingsPage({ auth }) {
   const [insegnamenti, setInsegnamenti] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [errMessage, setErrMessage] = useState();
+  const [showalert, setShowAlert] = useState();
+  const [opzioniinsegnamento, setOpzioniInsegnamento] = useState();
+
+  const refalert = useRef(null);
 
   // controllo che il token sia valido
   useEffect(() => {
@@ -31,6 +35,17 @@ function MyTeachingsPage({ auth }) {
     fetchData();
   }, []);
 
+  // quando clicco su un insegnamento mostro l'alert di opzioni
+  const selectInsegnamento = (insegnamento) => {
+    setOpzioniInsegnamento(insegnamento);
+    setShowAlert(true);
+  };
+
+  // quando clicco su un insegmento scorro verso l'alert
+  useEffect(() => {
+    refalert.current?.scrollIntoView({ behavior: "smooth" });
+  }, [opzioniinsegnamento]);
+
   // se non sono autenticato visualizzo l'errore con un link
   // alla pagina di login
   if (!auth) {
@@ -42,12 +57,18 @@ function MyTeachingsPage({ auth }) {
         </Link>
       </Container>
     );
+  } else if (!auth?.isProfessor) {
+    return (
+      <Container>
+        <p className="lead text-uppercase mt-3">Non sei un Docente</p>
+      </Container>
+    );
   } else {
     if (loaded) {
       // popolo la tabella con i dati che ricevo dal server
       return (
         <Container className="my-3">
-          <Table style={{ width: "auto" }} striped hover responsive>
+          <Table striped hover responsive>
             <thead>
               <tr>
                 <th>Corso</th>
@@ -57,13 +78,12 @@ function MyTeachingsPage({ auth }) {
                 <th>Anno</th>
                 <th>A Scelta</th>
                 <th>Scheda di trasparenza</th>
-                <th></th>
               </tr>
             </thead>
             <tbody>
               {insegnamenti.map((insegnamento) => (
                 <>
-                  <tr>
+                  <tr onClick={() => selectInsegnamento(insegnamento)}>
                     <td>{insegnamento.Corso}</td>
                     <td>{insegnamento.AnnoAccademico}</td>
                     <td>{insegnamento.Denominazione}</td>
@@ -76,6 +96,27 @@ function MyTeachingsPage({ auth }) {
               ))}
             </tbody>
           </Table>
+
+          {showalert ? (
+            <Alert variant="info" ref={refalert}>
+              <p>Insegnamento {opzioniinsegnamento.Denominazione}</p>
+              <ButtonGroup>
+                <Button disabled={opzioniinsegnamento.SchedaTrasparenza}>
+                  Inserisci scheda di trasparenza
+                </Button>
+                <Button
+                  as={Link}
+                  to={"/professors/listCounselling"}
+                  state={opzioniinsegnamento}
+                >
+                  Lista Ricevimenti
+                </Button>
+                <Button>Lista Esami </Button>
+              </ButtonGroup>
+            </Alert>
+          ) : (
+            <></>
+          )}
         </Container>
       );
     }

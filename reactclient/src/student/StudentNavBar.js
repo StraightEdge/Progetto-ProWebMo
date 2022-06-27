@@ -12,6 +12,9 @@ function StudentNavBar({ auth }) {
       <NavDropdown.Item as={Link} to="/students/signCds" auth={auth}>
         Iscrizione Corso di Studi
       </NavDropdown.Item>
+      <NavDropdown.Item as={Link} to="/students/payTaxes" auth={auth}>
+        Pagamento Tasse
+      </NavDropdown.Item>
     </>
   ) : (
     <>
@@ -19,6 +22,9 @@ function StudentNavBar({ auth }) {
         Carriera Studente
       </NavDropdown.Item>
       <NavDropdown.Item disabled>Iscrizione Corso di Studi</NavDropdown.Item>
+      <NavDropdown.Item as={Link} to="/students/payTaxes" auth={auth}>
+        Pagamento Tasse
+      </NavDropdown.Item>
     </>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Container, Form, InputGroup } from "react-bootstrap";
+import { Alert, Button, Container, Form, InputGroup } from "react-bootstrap";
 
 function AddTeachingPage({ auth }) {
   const [loaded, setLoaded] = useState(false);
@@ -8,6 +8,8 @@ function AddTeachingPage({ auth }) {
   const [settori, setSettori] = useState([]);
   const [formValues, setFormValues] = useState({});
   const [validated, setValidated] = useState(false);
+  const [message, setMessage] = useState({ error: false, text: "" });
+
   const navigate = useNavigate();
 
   // riferimento al campo area in modo da poter leggere il suo valore
@@ -36,10 +38,13 @@ function AddTeachingPage({ auth }) {
   const handleSubmit = (event) => {
     const form = event.currentTarget;
     setValidated(true);
-    if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
-    } else {
+    event.preventDefault();
+    event.stopPropagation();
+    if (formValues.name === "Tirocinio" || formValues.name === "Prova Finale") {
+      setMessage({ error: true, text: "Nome dell'insegnamento non valido" });
+      return;
+    }
+    if (form.checkValidity() === true) {
       submitForm(event);
     }
   };
@@ -131,7 +136,18 @@ function AddTeachingPage({ auth }) {
       <Container>
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
           <h2 className="text-center">Creazione Insegnamento</h2>
-          <InputGroup >
+          {message.error ? (
+            <Alert
+              variant="danger"
+              onClose={() => setMessage({ error: false, text: "" })}
+              dismissible
+            >
+              <p>{message.text}</p>
+            </Alert>
+          ) : (
+            <></>
+          )}
+          <InputGroup>
             <InputGroup.Text>Denominazione</InputGroup.Text>
             <Form.Control
               name="name"

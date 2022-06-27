@@ -5,6 +5,9 @@ const {
   corsidistudio,
   insegnamentiattivi,
   carriera,
+  ricevimentistudente,
+  iscrizioneRicevimento,
+  annullaRicevimento,
 } = require("../models/studentModel");
 
 const secret = "mysecretsshhh";
@@ -23,15 +26,17 @@ async function sign_Cds(req, res) {
       .then((decoded) => {
         if (decoded.isStudent) {
           return iscrizioneCds(req.body);
-        } else {
-          res.json({ status: 401, message: "Unauthorized: Not a student" });
         }
       })
       .then((results) => {
-        if (results.errcode !== 200) {
-          next(createError(results.errcode, results.errmsg));
+        if (results) {
+          if (results.errcode !== 200) {
+            next(createError(results.errcode, results.errmsg));
+          } else {
+            res.json({ status: 200, message: "Ok" });
+          }
         } else {
-          res.json({ status: 200, message: "Ok" });
+          res.json({ status: 401, message: "Unauthorized: Not a student" });
         }
       })
       .catch((err) => {
@@ -70,15 +75,17 @@ async function get_carreer(req, res) {
       .then((decoded) => {
         if (decoded.isStudent) {
           return carriera(decoded.data.matricola);
-        } else {
-          res.json({ status: 401, message: "Unauthorized: Not a student" });
         }
       })
       .then((results) => {
-        if (results.errcode !== 200) {
-          next(createError(results.errcode, results.errmsg));
+        if (results) {
+          if (results.errcode !== 200) {
+            next(createError(results.errcode, results.errmsg));
+          } else {
+            res.json({ status: 200, message: "Ok", carriera: results.carreer });
+          }
         } else {
-          res.json({ status: 200, message: "Ok", carriera: results.carreer });
+          res.json({ status: 401, message: "Unauthorized: Not a student" });
         }
       })
       .catch((err) => {
@@ -87,4 +94,111 @@ async function get_carreer(req, res) {
   }
 }
 
-module.exports = { sign_Cds, get_Cds, get_CdsTeachings, get_carreer };
+async function get_studentcounselling(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isStudent) {
+          return ricevimentistudente(decoded.data.matricola);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            next(createError(results.errcode, results.errmsg));
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              ricevimenti: results.ricevimenti,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not a student" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
+async function sign_counselling(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isStudent) {
+          return iscrizioneRicevimento(req.body, decoded.data.matricola);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            next(createError(results.errcode, results.errmsg));
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              ricevimenti: results.ricevimenti,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not a student" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
+async function remove_counselling(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isStudent) {
+          return annullaRicevimento(req.body, decoded.data.matricola);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            next(createError(results.errcode, results.errmsg));
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              ricevimenti: results.ricevimenti,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not a student" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
+module.exports = {
+  sign_Cds,
+  get_Cds,
+  get_CdsTeachings,
+  get_carreer,
+  get_studentcounselling,
+  sign_counselling,
+  remove_counselling,
+};

@@ -28,22 +28,24 @@ async function add_professor(req, res) {
       .then((decoded) => {
         if (decoded.isAdmin) {
           return aggiungiDocente(req.body);
-        } else {
-          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
         }
       })
       .then((results) => {
-        if (results.errcode !== 200) {
-          res.json({
-            status: results.errcode,
-            message: results.errmsg,
-          });
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              user: results.user.NomeUtente,
+            });
+          }
         } else {
-          res.json({
-            status: 200,
-            message: "Ok",
-            user: results.user.NomeUtente,
-          });
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
         }
       })
       .catch((err) => {
@@ -62,22 +64,24 @@ async function add_teaching(req, res) {
       .then((decoded) => {
         if (decoded.isAdmin) {
           return aggiungiInsegnamento(req.body);
-        } else {
-          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
         }
       })
       .then((results) => {
-        if (results.errcode !== 200) {
-          res.json({
-            status: results.errcode,
-            message: results.errmsg,
-          });
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              teaching: results.teaching,
+            });
+          }
         } else {
-          res.json({
-            status: 200,
-            message: "Ok",
-            teaching: results.teaching,
-          });
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
         }
       })
       .catch((err) => {
@@ -156,23 +160,25 @@ async function add_cds(req, res) {
       .then((decoded) => {
         if (decoded.isAdmin) {
           return aggiungiCorso(req.body);
-        } else {
-          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
         }
       })
       .then((results) => {
-        if (results.errcode !== 200) {
-          res.json({
-            status: results.errcode,
-            message: results.errmsg,
-            corso: results.corso,
-          });
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+              corso: results.corso,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              corso: results.corso,
+            });
+          }
         } else {
-          res.json({
-            status: 200,
-            message: "Ok",
-            corso: results.corso,
-          });
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
         }
       })
       .catch((err) => {
@@ -191,23 +197,25 @@ async function edit_cds(req, res) {
       .then((decoded) => {
         if (decoded.isAdmin) {
           return modificaCorso(req.body);
-        } else {
-          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
         }
       })
       .then((results) => {
-        if (results.errcode !== 200) {
-          res.json({
-            status: results.errcode,
-            message: results.errmsg,
-            corso: results.corso,
-          });
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+              corso: results.corso,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              corso: results.corso,
+            });
+          }
         } else {
-          res.json({
-            status: 200,
-            message: "Ok",
-            corso: results.corso,
-          });
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
         }
       })
       .catch((err) => {
@@ -226,23 +234,25 @@ async function delete_cds(req, res) {
       .then((decoded) => {
         if (decoded.isAdmin) {
           return eliminaCorso(req.body);
-        } else {
-          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
         }
       })
       .then((results) => {
-        if (results.errcode !== 200) {
-          res.json({
-            status: results.errcode,
-            message: results.errmsg,
-            corso: results.corso,
-          });
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+              corso: results.corso,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              corso: results.corso,
+            });
+          }
         } else {
-          res.json({
-            status: 200,
-            message: "Ok",
-            corso: results.corso,
-          });
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
         }
       })
       .catch((err) => {

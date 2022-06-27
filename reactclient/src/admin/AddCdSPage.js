@@ -185,7 +185,6 @@ function AddCdSPage({ auth }) {
         // altrimenti renderizzo la pagina di errore,
         // se il corso già esiste mostro un alert di errore
         if (res.status === 403) {
-          console.log(res);
           setMessage({
             error: true,
             text: `Corso di studi ${res.corso} già esistente`,
