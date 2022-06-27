@@ -7,6 +7,9 @@ const {
   get_Cds,
   get_CdsTeachings,
   get_carreer,
+  get_studentcounselling,
+  sign_counselling,
+  remove_counselling,
 } = require("../controllers/studentController");
 
 /* La rotta /users è vietata */
@@ -25,5 +28,14 @@ router.get("/getCdsTeachings", get_CdsTeachings);
 
 /* Recupero carriera studente */
 router.get("/getCarriera", get_carreer);
+
+/* Recupero ricevimenti del corso di studi dello studente */
+router.get("/getStudentCounselling", get_studentcounselling);
+
+/* Iscrizione studenti ad un ricevimento */
+router.post("/signCounselling", sign_counselling);
+
+/* Annulla iscrizione studenti ad un ricevimento */
+router.post("/removeCounselling", remove_counselling);
 
 module.exports = router;

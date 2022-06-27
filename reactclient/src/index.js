@@ -12,9 +12,15 @@ import RegistrationPage from "./RegistrationPage";
 import ErrorPage from "./ErrorPage";
 import ProfilePage from "./ProfilePage";
 import LandingPage from "./LandingPage";
+
 import SignCdSPage from "./student/SignCdSPage";
 import MyCarreerPage from "./student/MyCarreerPage";
+import StudentCounsellingPage from "./student/StudentCounsellingPage";
+import PayTaxesPage from "./student/PayTaxesPage";
+
 import MyTeachingsPage from "./professor/MyTeachingsPage";
+import ProfCounsellingPage from "./professor/ProfCounsellingPage";
+
 import AddProfessorPage from "./admin/AddProfessorPage";
 import AddTeachingPage from "./admin/AddTeachingPage";
 import AddCdSPage from "./admin/AddCdSPage";
@@ -78,8 +84,20 @@ function App() {
           element={<MyCarreerPage auth={auth} setAuth={setAuth} />}
         />
         <Route
+          path="/students/payTaxes"
+          element={<PayTaxesPage auth={auth} />}
+        />
+        <Route
+          path="/students/listCounselling"
+          element={<StudentCounsellingPage auth={auth} />}
+        />
+        <Route
           path="/professors/myTeachings"
           element={<MyTeachingsPage auth={auth} setAuth={setAuth} />}
+        />
+        <Route
+          path="/professors/listCounselling"
+          element={<ProfCounsellingPage auth={auth} />}
         />
         <Route
           path="/admin/addProfessor"

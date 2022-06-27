@@ -94,6 +94,8 @@ async function login(req, res, next) {
               ? results.user.Denominazione + " " + results.user.AnnoAccademico
               : null,
             anno: results.user.IDCorso ? results.user.Anno : null,
+            tirocinio: results.user.Tirocinio ? "Si" : "No",
+            provafinale: results.user.Provafinale ? "Si" : "No",
             primarata: results.user.PrimaRata ? "Si" : "No",
             secondarata: results.user.SecondaRata ? "Si" : "No",
             reddito: results.user.Reddito,

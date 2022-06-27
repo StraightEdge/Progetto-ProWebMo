@@ -596,7 +596,6 @@ async function eliminaCorso(req_body) {
   let returndata = {
     errcode: 200,
     errmsg: "OK",
-    corso: req_body.name + " " + req_body.academicyear,
   };
   let results = {};
   try {

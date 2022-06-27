@@ -1,6 +1,10 @@
 var createError = require("http-errors");
 
-const { insegnamentidocente } = require("../models/professorModel");
+const {
+  insegnamentidocente,
+  ricevimentidocente,
+  aggiungiricevimento,
+} = require("../models/professorModel");
 
 const secret = "mysecretsshhh";
 var redis = require("redis");
@@ -18,19 +22,21 @@ async function get_profteachings(req, res) {
       .then((decoded) => {
         if (decoded.isProfessor) {
           return insegnamentidocente(decoded.data.matricola);
-        } else {
-          res.json({ status: 401, message: "Unauthorized: Not a professor" });
         }
       })
       .then((results) => {
-        if (results.errcode !== 200) {
-          next(createError(results.errcode, results.errmsg));
+        if (results) {
+          if (results.errcode !== 200) {
+            next(createError(results.errcode, results.errmsg));
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              insegnamenti: results.insegnamenti,
+            });
+          }
         } else {
-          res.json({
-            status: 200,
-            message: "Ok",
-            insegnamenti: results.insegnamenti,
-          });
+          res.json({ status: 401, message: "Unauthorized: Not a professor" });
         }
       })
       .catch((err) => {
@@ -39,4 +45,70 @@ async function get_profteachings(req, res) {
   }
 }
 
-module.exports = { get_profteachings };
+async function get_profcounselling(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isProfessor) {
+          return ricevimentidocente(decoded.data.matricola);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            next(createError(results.errcode, results.errmsg));
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              ricevimenti: results.ricevimenti,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not a professor" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
+async function add_counselling(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isProfessor) {
+          return aggiungiricevimento(req.body, decoded.data.matricola);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            next(createError(results.errcode, results.errmsg));
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              ricevimenti: results.ricevimenti,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not a professor" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
+module.exports = { get_profteachings, get_profcounselling, add_counselling };

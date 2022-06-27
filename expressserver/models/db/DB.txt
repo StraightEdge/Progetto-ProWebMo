@@ -58,7 +58,7 @@ CarrieraStudenti
 Matricola|IDIns|IDEsame|Domande|Esito|Verbalizzazione
 
 Carriera di ogni studente, con matricola dello stesso e ID dell'insegnamento e eventuale esame che hanno sostenuto.
-Il Docente carica domande e votazione, la verbalizzazione viene confermata dallo studente.
+Il Docente carica domande e esito, la verbalizzazione viene confermata dallo studente.
 ------
 
 Ricevimenti
