@@ -25,8 +25,10 @@ import AddProfessorPage from "./admin/AddProfessorPage";
 import AddTeachingPage from "./admin/AddTeachingPage";
 import AddCdSPage from "./admin/AddCdSPage";
 import EditCdSPage from "./admin/EditCdSPage";
+import TaxValidationPage from "./admin/TaxValidationPage";
 
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./css/stampa.css";
 
 function App() {
   const [auth, setAuth] = useState();
@@ -109,6 +111,10 @@ function App() {
         />
         <Route path="/admin/addCdS" element={<AddCdSPage auth={auth} />} />
         <Route path="/admin/editCdS" element={<EditCdSPage auth={auth} />} />
+        <Route
+          path="/admin/validateTax"
+          element={<TaxValidationPage auth={auth} />}
+        />
         <Route path="/error" element={<ErrorPage />} />
         <Route path="/landing" element={<LandingPage />} />
       </Routes>

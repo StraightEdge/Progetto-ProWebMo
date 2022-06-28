@@ -163,14 +163,16 @@ async function carriera(matricola) {
         // recupero la carriera dello studente
         results = await db
           .query(
-            "SELECT `i`.`IDIns`, `Anno`, `Denominazione`, `CFU`, `aScelta`, `Blocco`, \
-            `Esito`, `SchedaTrasparenza`\
-            FROM `CarrieraStudenti` `cs`\
-            JOIN `Insegnamenti` `i` ON (`i`.`IDIns` = `cs`.`IDIns`)\
-            JOIN `Erogazione` `e` ON (`e`.`IDIns` = `cs`.`IDIns`)\
-            WHERE Matricola = ?\
+            "SELECT `i`.`IDIns`, `Anno`, `Denominazione`, `CFU`, \
+            `SSD`, `aScelta`, `Blocco`, `Esito`, \
+            `ad`.Cognome AS CognomeDocente, `ad`.Nome AS NomeDocente, `cs`.Matricola, `SchedaTrasparenza` \
+            FROM `Erogazione` `e` \
+            JOIN `Insegnamenti` `i` ON (`i`.`IDIns` = `e`.`IDIns`) \
+            LEFT JOIN `CarrieraStudenti` `cs` ON (`cs`.`IDIns` = `e`.`IDIns` AND `cs`.`Matricola` = ?) \
+            JOIN `AnagraficaDocenti` `ad` ON (`ad`.`Matricola` = `e`.MatDocente) \
+            WHERE `e`.`IDCorso` = ? \
             ORDER BY `Anno`",
-            [matricola]
+            [matricola, studente[0].IDCorso]
           )
           .catch((err) => {
             throw err;
@@ -193,17 +195,20 @@ async function carriera(matricola) {
           Denominazione: "Tirocinio",
           CFU: tirpf[0].CFUTirocinio,
           Esito: studente[0].Tirocinio,
+          Matricola: matricola,
         });
         results.push({
           Denominazione: "Prova Finale",
           CFU: tirpf[0].CFUProvaFinale,
           Esito: studente[0].ProvaFinale,
+          Matricola: matricola,
         });
 
         returndata.carreer = results;
       }
     });
   } catch (err) {
+    console.log(err);
     returndata.errcode = 404;
     returndata.errmsg = "Impossibile recuperare carriera";
   }

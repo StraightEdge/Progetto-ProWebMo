@@ -10,6 +10,7 @@ const {
   aggiungiCorso,
   modificaCorso,
   eliminaCorso,
+  riceviStudenti,
 } = require("../models/adminModel");
 
 const secret = "mysecretsshhh";
@@ -90,7 +91,7 @@ async function add_teaching(req, res) {
   }
 }
 
-async function get_teaching(req, res) {
+async function get_teachings(req, res) {
   try {
     let results = await riceviInsegnamenti();
     res.json(results);
@@ -261,14 +262,25 @@ async function delete_cds(req, res) {
   }
 }
 
+async function get_students(req, res) {
+  try {
+    let results = await riceviStudenti();
+    res.json(results);
+  } catch (err) {
+    console.log(err);
+    next(createError(500));
+  }
+}
+
 module.exports = {
   add_professor,
   add_teaching,
-  get_teaching,
+  get_teachings,
   get_professors,
   check_prof_cfu,
   check_prof_cfu_edit,
   add_cds,
   edit_cds,
   delete_cds,
+  get_students,
 };

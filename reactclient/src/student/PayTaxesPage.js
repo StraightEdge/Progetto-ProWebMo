@@ -8,8 +8,9 @@ function PayTaxesPage({ auth, setAuth }) {
   const [importo, setImporto] = useState();
   const [loaded, setLoaded] = useState(false);
 
-  const stampa = useReactToPrint({ content: () => refbollettino.current });
   const refbollettino = useRef(null);
+
+  const stampa = useReactToPrint({ content: () => refbollettino.current });
 
   useEffect(() => {
     async function fetchData() {
@@ -43,7 +44,7 @@ function PayTaxesPage({ auth, setAuth }) {
 
   const stampaBollettino = (rata) => {
     refbollettino.current.innerHTML = `
-        <div class="container">
+        <div class="container stampa">
             <div class="row">
                 <div class="col-md-12">
                     <h1>Bollettino</h1>
@@ -62,8 +63,7 @@ function PayTaxesPage({ auth, setAuth }) {
                     </p>
                 </div>
             </div>
-        </div>
-        `;
+        </div>`;
     stampa();
   };
 
