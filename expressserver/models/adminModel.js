@@ -649,6 +649,35 @@ async function eliminaCorso(req_body) {
   return returndata;
 }
 
+async function riceviStudenti() {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // seleziono tutti i docenti e i loro dati anagrafici
+      results = await db
+        .query(
+          "SELECT `s`.Matricola, Cognome, Nome, Email, Reddito, \
+          PrimaRata, SecondaRata \
+          FROM `Studenti` `s`\
+          JOIN `AnagraficaStudenti` `as` ON (`s`.Matricola = `as`.Matricola )\
+          ORDER BY `as`.Cognome, `as`.Nome"
+        )
+        .catch((err) => {
+          throw err;
+        });
+    });
+    return results;
+  } catch (err) {
+    console.log(err);
+    next(createError(500));
+  }
+}
+
 module.exports = {
   aggiungiDocente,
   aggiungiInsegnamento,
@@ -659,4 +688,5 @@ module.exports = {
   aggiungiCorso,
   modificaCorso,
   eliminaCorso,
+  riceviStudenti,
 };

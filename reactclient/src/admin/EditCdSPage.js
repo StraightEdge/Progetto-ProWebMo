@@ -78,7 +78,7 @@ function EditCdSPage({ auth }) {
 
     // scarico la lista degli insegnamenti e la salvo in insegnamenti
     async function fetchTeaching() {
-      fetch("http://192.168.1.16:9000/admins/getTeaching", {
+      fetch("http://192.168.1.16:9000/admins/getTeachings", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",

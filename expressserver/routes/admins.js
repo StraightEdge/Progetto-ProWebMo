@@ -5,13 +5,14 @@ var router = express.Router();
 const {
   add_professor,
   add_teaching,
-  get_teaching,
+  get_teachings,
   get_professors,
   check_prof_cfu,
   check_prof_cfu_edit,
   add_cds,
   edit_cds,
   delete_cds,
+  get_students,
 } = require("../controllers/adminController");
 
 /* La rotta /users è vietata */
@@ -29,7 +30,7 @@ router.get("/getProfessors", get_professors);
 router.post("/addTeaching", add_teaching);
 
 /* Scarica Insegnamenti */
-router.get("/getTeaching", get_teaching);
+router.get("/getTeachings", get_teachings);
 
 /* Controlla CFU Docenti */
 router.post("/checkProfCFU", check_prof_cfu);
@@ -45,5 +46,8 @@ router.post("/editCdS", edit_cds);
 
 /* Elimina Corsi */
 router.post("/deleteCdS", delete_cds);
+
+/* Scarica Studenti */
+router.get("/getStudents", get_students);
 
 module.exports = router;
