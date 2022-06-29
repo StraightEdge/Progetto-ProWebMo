@@ -19,7 +19,7 @@ function AdminNavBar() {
         Modifica Corso di Studi
       </NavDropdown.Item>
       <NavDropdown.Item as={Link} to="/admin/validateTax">
-        Convalida Tasse studenti
+        Convalida Tasse Studenti
       </NavDropdown.Item>
     </>
   );

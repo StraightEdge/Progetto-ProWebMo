@@ -47,11 +47,15 @@ function StudentCounsellingPage({ auth }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log(res);
         // se il server risponde con 200 aggiorno i ricevimenti,
         // altrimenti mostro un errore
         if (res.status !== 200) {
-          console.log("Impossibile iscriversi");
+          navigate("/error", {
+            state: {
+              status: res.status,
+              message: res.message,
+            },
+          });
         } else {
           setRicevimenti(res.ricevimenti);
         }
@@ -74,7 +78,6 @@ function StudentCounsellingPage({ auth }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log(res);
         // se il server risponde con 200 aggiorno i ricevimenti,
         // altrimenti mostro un errore
         if (res.status !== 200) {

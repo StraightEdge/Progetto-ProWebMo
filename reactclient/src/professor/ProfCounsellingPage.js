@@ -117,7 +117,6 @@ function ProfCounsellingPage({ auth }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log(res);
         // se il server risponde con 200 renderizzo aggiorno i ricevimenti,
         // altrimenti mostro un errore
         if (res.status !== 200) {

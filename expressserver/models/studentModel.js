@@ -86,55 +86,6 @@ async function iscrizioneCds(req_body) {
   return returndata;
 }
 
-async function corsidistudio() {
-  // istanziamo il middleware
-  const db = await makeDb(config);
-
-  // formattiamo la nostra struttura dati di ritorno
-  let results = {};
-
-  try {
-    await withTransaction(db, async () => {
-      // recupero tutti i CdS
-      results = await db.query("SELECT * FROM `Corsi`").catch((err) => {
-        throw err;
-      });
-    });
-
-    return results;
-  } catch (err) {
-    console.log(err);
-    next(createError(500));
-  }
-}
-
-async function insegnamentiattivi() {
-  // istanziamo il middleware
-  const db = await makeDb(config);
-
-  // formattiamo la nostra struttura dati di ritorno
-  let results = {};
-
-  try {
-    await withTransaction(db, async () => {
-      // recupero gli insegnamenti attivi nei vari cds
-      results = await db
-        .query(
-          "SELECT * FROM `Erogazione` `e`\
-          JOIN `Insegnamenti` `i` ON (`i`.IDIns = `e`.`IDIns`)"
-        )
-        .catch((err) => {
-          throw err;
-        });
-    });
-
-    return results;
-  } catch (err) {
-    console.log(err);
-    next(createError(500));
-  }
-}
-
 async function carriera(matricola) {
   // istanziamo il middleware
   const db = await makeDb(config);
@@ -335,9 +286,8 @@ async function iscrizioneRicevimento(req_body, matricola) {
       }
     });
   } catch (err) {
-    console.log(err);
     returndata.errcode = 404;
-    returndata.errmsg = "Impossibile recuperare ricevimenti del corso";
+    returndata.errmsg = "Impossibile iscriversi al ricevimento";
   }
 
   return returndata;
@@ -407,7 +357,200 @@ async function annullaRicevimento(req_body, matricola) {
   } catch (err) {
     console.log(err);
     returndata.errcode = 404;
-    returndata.errmsg = "Impossibile recuperare ricevimenti del corso";
+    returndata.errmsg = "Impossibile annullare iscrizione al ricevimento";
+  }
+
+  return returndata;
+}
+
+async function esamistudente(matricola) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", esami: null };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // controllo se lo studente esiste
+      results = await db
+        .query("SELECT * FROM `Studenti`\
+        WHERE Matricola = ?", [
+          matricola,
+        ])
+        .catch((err) => {
+          throw err;
+        });
+
+      if (results.length == 0) {
+        console.log("Studente non trovato!");
+        returndata.errcode = 404;
+        returndata.errmsg = "Studente non trovato";
+      } else {
+        // recupero gli esami del corso e se lo studente è iscritto
+        results = await db
+          .query(
+            "SELECT `e`.IDEsame, `e`.`IDIns`, `Data`, `Sede`, `Sessione`, `Appello`, `MatStudente` \
+            FROM `Erogazione` `er` \
+            JOIN `Esami` `e` ON (`e`.IDIns = `er`.IDIns) \
+            LEFT JOIN (SELECT `IDEsame`, `MatStudente` \
+                      FROM `IscrizioneEsame` `i` \
+                      WHERE `i`.`MatStudente` = ?) AS `Iscritto` ON (`Iscritto`.IDEsame = `e`.`IDEsame`) \
+            WHERE `er`.IDCorso = ?",
+            [matricola, results[0].IDCorso]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        returndata.esami = results;
+      }
+    });
+  } catch (err) {
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile recuperare esami del corso";
+  }
+
+  return returndata;
+}
+
+async function iscrizioneEsame(req_body, matricola) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", esami: null };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // controllo se lo studente esiste
+      results = await db
+        .query("SELECT * FROM `Studenti`\
+        WHERE Matricola = ?", [
+          matricola,
+        ])
+        .catch((err) => {
+          throw err;
+        });
+
+      if (results.length == 0) {
+        console.log("Studente non trovato!");
+        returndata.errcode = 404;
+        returndata.errmsg = "Studente non trovato";
+      } else {
+        let idcorso = results[0].IDCorso;
+
+        // se lo studente non ha pagato la seconda rata
+        // non può iscriversi alla sessione invernale, primaverile ed estiva
+        if (!results[0].SecondaRata && req_body.session !== "Autunnale") {
+          console.log("Studente non ha pagato la seconda rata");
+          returndata.errcode = 404;
+          returndata.errmsg = "Studente non ha pagato la seconda rata";
+          return returndata;
+        }
+        // iscrivo lo studente all'esame
+        results = await db
+          .query(
+            "INSERT INTO `IscrizioneEsame` \
+        (IDEsame, MatStudente) \
+        SELECT ? AS IDEsame, ? AS MatStudente",
+            [req_body.IDEsame, matricola]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        // recupero gli esami del corso e se lo studente è iscritto
+        results = await db
+          .query(
+            "SELECT `e`.IDEsame, `e`.`IDIns`, `Data`, `Sede`, `Sessione`, `Appello`, `MatStudente` \
+            FROM `Erogazione` `er` \
+            JOIN `Esami` `e` ON (`e`.IDIns = `er`.IDIns) \
+            LEFT JOIN (SELECT `IDEsame`, `MatStudente` \
+                      FROM `IscrizioneEsame` `i` \
+                      WHERE `i`.`MatStudente` = ?) AS `Iscritto` ON (`Iscritto`.IDEsame = `e`.`IDEsame`) \
+            WHERE `er`.IDCorso = ?",
+            [matricola, idcorso]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        returndata.esami = results;
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile iscrivere lo studente all'esame";
+  }
+
+  return returndata;
+}
+
+async function annullaEsame(req_body, matricola) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", esami: null };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // controllo se lo studente esiste
+      results = await db
+        .query("SELECT * FROM `Studenti`\
+        WHERE Matricola = ?", [
+          matricola,
+        ])
+        .catch((err) => {
+          throw err;
+        });
+
+      if (results.length == 0) {
+        console.log("Studente non trovato!");
+        returndata.errcode = 404;
+        returndata.errmsg = "Studente non trovato";
+      } else {
+        let idcorso = results[0].IDCorso;
+
+        // rimuovo lo studente dal ricevimento
+        results = await db
+          .query(
+            "DELETE FROM `IscrizioneEsame` \
+        WHERE IDEsame = ? AND MatStudente = ?",
+            [req_body.IDEsame, matricola]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        // recupero gli esami del corso e se lo studente è iscritto
+        results = await db
+          .query(
+            "SELECT `e`.IDEsame, `e`.`IDIns`, `Data`, `Sede`, `Sessione`, `Appello`, `MatStudente` \
+            FROM `Erogazione` `er` \
+            JOIN `Esami` `e` ON (`e`.IDIns = `er`.IDIns) \
+            LEFT JOIN (SELECT `IDEsame`, `MatStudente` \
+                      FROM `IscrizioneEsame` `i` \
+                      WHERE `i`.`MatStudente` = ?) AS `Iscritto` ON (`Iscritto`.IDEsame = `e`.`IDEsame`) \
+            WHERE `er`.IDCorso = ?",
+            [matricola, idcorso]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        returndata.esami = results;
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile annullare iscrizione esame";
   }
 
   return returndata;
@@ -415,10 +558,11 @@ async function annullaRicevimento(req_body, matricola) {
 
 module.exports = {
   iscrizioneCds,
-  corsidistudio,
-  insegnamentiattivi,
   carriera,
   ricevimentistudente,
   iscrizioneRicevimento,
   annullaRicevimento,
+  esamistudente,
+  iscrizioneEsame,
+  annullaEsame,
 };

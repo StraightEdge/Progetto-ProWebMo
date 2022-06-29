@@ -34,9 +34,8 @@ function TaxValidationPage({ auth }) {
       })
         .then((res) => res.json())
         .then((res) => {
-          console.log(res);
-          if (res) {
-            setStudenti(res);
+          if (res.status === 200) {
+            setStudenti(res.studenti);
             setLoaded(true);
           } else {
             setErrMessage(res.message);
@@ -47,9 +46,10 @@ function TaxValidationPage({ auth }) {
   }, []);
 
   const ricercaStudente = (e) => {
-    setRicerca(e.target.value);
+    setRicerca(e.target.value.toLowerCase());
   };
 
+  // quando clicco su uno studente salvo i suoi dati e mostro un alert
   const selectStudente = (studente) => {
     setConvalidaStudente(studente);
     setShowAlert(true);
@@ -59,6 +59,39 @@ function TaxValidationPage({ auth }) {
   useEffect(() => {
     refalert.current?.scrollIntoView({ behavior: "smooth" });
   }, [convalidastudente]);
+
+  // iscrizione studente al ricevimento
+  const convalidaRata = (matricola, rata) => {
+    let richiesta = { studente: matricola, rata: rata };
+    fetch("http://192.168.1.16:9000/admins/validateTax", {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow",
+      referrerPolicy: "no-referrer",
+      body: JSON.stringify(richiesta),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+        // se il server risponde con 200 aggiorno studenti
+        if (res.status === 200) {
+          setStudenti(res.studenti);
+
+          for (let studente of res.studenti) {
+            if (studente.Matricola === matricola) {
+              console.log(studente);
+              setConvalidaStudente(studente);
+              break;
+            }
+          }
+        }
+      });
+  };
 
   // se non sono autenticato visualizzo l'errore con un link
   // alla pagina di login
@@ -107,7 +140,9 @@ function TaxValidationPage({ auth }) {
             </thead>
             <tbody>
               {studenti.map((studente) =>
-                (studente.Nome + studente.Cognome + studente.Email).includes(ricerca) ? (
+                (studente.Nome + studente.Cognome + studente.Email)
+                  .toLowerCase()
+                  .includes(ricerca) ? (
                   <>
                     <tr onClick={() => selectStudente(studente)}>
                       <td>{studente.Matricola}</td>
@@ -133,8 +168,21 @@ function TaxValidationPage({ auth }) {
                 Matricola {convalidastudente.Matricola}
               </p>
               <ButtonGroup>
-                <Button>Convalida Prima Rata</Button>
-                <Button>Convalida Seconda Rata </Button>
+                <Button
+                  disabled={convalidastudente.PrimaRata}
+                  onClick={() => convalidaRata(convalidastudente.Matricola, 1)}
+                >
+                  Convalida Prima Rata
+                </Button>
+                <Button
+                  disabled={
+                    !convalidastudente.PrimaRata ||
+                    convalidastudente.SecondaRata
+                  }
+                  onClick={() => convalidaRata(convalidastudente.Matricola, 2)}
+                >
+                  Convalida Seconda Rata
+                </Button>
               </ButtonGroup>
             </Alert>
           ) : (

@@ -7,6 +7,8 @@ const {
   login,
   get_profile,
   logout,
+  get_Cds,
+  get_CdsTeachings,
 } = require("../controllers/userController");
 
 /* La rotta /users è vietata */
@@ -25,5 +27,11 @@ router.get("/profile", get_profile);
 
 /* Logout Utente */
 router.get("/logout", logout);
+
+/* Recupero lista Corsi di Studio */
+router.get("/getCds", get_Cds);
+
+/* Recupero lista degli insegnamenti */
+router.get("/getCdsTeachings", get_CdsTeachings);
 
 module.exports = router;

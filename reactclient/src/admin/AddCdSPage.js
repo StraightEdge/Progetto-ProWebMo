@@ -49,7 +49,7 @@ function AddCdSPage({ auth }) {
 
     // scarico la lista degli insegnamenti e la salvo in insegnamenti
     async function fetchTeaching() {
-      fetch("http://192.168.1.16:9000/admins/getTeaching", {
+      fetch("http://192.168.1.16:9000/admins/getTeachings", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -62,8 +62,9 @@ function AddCdSPage({ auth }) {
       })
         .then((res) => res.json())
         .then((res) => {
-          console.log(res);
-          setInsegnamenti(res);
+          if (res.status === 200) {
+            setInsegnamenti(res.insegnamenti);
+          }
         });
     }
 
@@ -82,7 +83,9 @@ function AddCdSPage({ auth }) {
       })
         .then((res) => res.json())
         .then((res) => {
-          setDocenti(res);
+          if (res.status === 200) {
+            setDocenti(res.docenti);
+          }
         });
     }
     fetchSSD();
@@ -164,7 +167,6 @@ function AddCdSPage({ auth }) {
         if (res.status !== 200) {
           setMessage({ error: true, text: res.message });
         } else {
-          console.log(formValues);
           return fetch("http://192.168.1.16:9000/admins/addCdS", {
             method: "POST",
             mode: "cors",

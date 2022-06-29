@@ -42,9 +42,9 @@ Dati anagrafici di ogni studente, separati dalla tabella Studenti.
 ------
 
 Esami
-IDEsame|IDInsegnamento|IDCorso|Data|Sede|Sessione|Appello
+IDEsame|IDInsegnamento|MatDocente|Data|Sede|Sessione|Appello
 
-Gli Esami hanno un loro ID, l'ID dell'Insegnamento e l'ID del Corso.
+Gli Esami hanno un loro ID, l'ID dell'Insegnamento e la matricola del docente.
 Il Docente inserisce la data, la sede, la sessione (Estiva/Invernale/etc) e l'appello (Primo/Secondo/Terzo)
 ------
 

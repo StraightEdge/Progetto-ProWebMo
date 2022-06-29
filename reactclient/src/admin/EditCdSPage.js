@@ -49,7 +49,7 @@ function EditCdSPage({ auth }) {
   useEffect(() => {
     // scarico i corsi di studio e li salvo in corsi
     async function get_cds() {
-      fetch("http://192.168.1.16:9000/students/getCds", {
+      fetch("http://192.168.1.16:9000/users/getCds", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -62,8 +62,12 @@ function EditCdSPage({ auth }) {
       })
         .then((res) => res.json())
         .then((res) => {
-          setLoaded(true);
-          setCorsi(res);
+          if (res.status !== 200) {
+            setMessage({ error: true, text: res.message });
+          } else {
+            setCorsi(res.corsi);
+            setLoaded(true);
+          }
         });
     }
 
@@ -91,7 +95,9 @@ function EditCdSPage({ auth }) {
       })
         .then((res) => res.json())
         .then((res) => {
-          setInsegnamenti(res);
+          if (res.status === 200) {
+            setInsegnamenti(res.insegnamenti);
+          }
         });
     }
 
@@ -110,7 +116,9 @@ function EditCdSPage({ auth }) {
       })
         .then((res) => res.json())
         .then((res) => {
-          setDocenti(res);
+          if (res.status === 200) {
+            setDocenti(res.docenti);
+          }
         });
     }
     get_cds();
@@ -159,7 +167,7 @@ function EditCdSPage({ auth }) {
   // scarico gli insegnamenti del corso da modificare
   // e li salvo in insegnamentiinseriti
   async function get_cdsteachings(idcorso) {
-    fetch("http://192.168.1.16:9000/students/getCdsTeachings", {
+    fetch("http://192.168.1.16:9000/users/getCdsTeachings", {
       method: "GET",
       mode: "cors",
       cache: "no-cache",
@@ -172,53 +180,55 @@ function EditCdSPage({ auth }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        let insegnamenticorso = [];
-        let totcfu = 0;
-        let totcfublocchi = [0, 0, 0];
-        let settore = "";
+        if (res.status === 200) {
+          let insegnamenticorso = [];
+          let totcfu = 0;
+          let totcfublocchi = [0, 0, 0];
+          let settore = "";
 
-        for (let ins of res) {
-          if (ins.IDCorso.toString() === idcorso) {
-            // recupero il docente dell'insegnamento
-            for (let docente of docenti) {
-              if (docente.Matricola === ins.MatDocente) {
-                ins.professor = docente;
-                break;
-              }
-            }
-            // recupero i cfu dell'insegnamento
-            for (let i of insegnamenti) {
-              if (i.IDIns === ins.IDIns) {
-                if (ins.aScelta) {
-                  settore = i.SSD;
-                  totcfublocchi[parseInt(ins.Blocco) - 1] = i.CFU;
-                } else {
-                  totcfu += i.CFU;
+          for (let ins of res.insegnamenti) {
+            if (ins.IDCorso.toString() === idcorso) {
+              // recupero il docente dell'insegnamento
+              for (let docente of docenti) {
+                if (docente.Matricola === ins.MatDocente) {
+                  ins.professor = docente;
+                  break;
                 }
-                break;
               }
+              // recupero i cfu dell'insegnamento
+              for (let i of insegnamenti) {
+                if (i.IDIns === ins.IDIns) {
+                  if (ins.aScelta) {
+                    settore = i.SSD;
+                    totcfublocchi[parseInt(ins.Blocco) - 1] = i.CFU;
+                  } else {
+                    totcfu += i.CFU;
+                  }
+                  break;
+                }
+              }
+              insegnamenticorso.push(ins);
             }
-            insegnamenticorso.push(ins);
           }
-        }
 
-        for (let area of aree) {
-          if (area.settori.includes(settore)) {
-            refarea.current.value = area.tipo;
-            setSettori(area.settori);
-            setFormValues((prevState) => ({
-              ...prevState,
-              ssd: settore,
-            }));
-            break;
+          for (let area of aree) {
+            if (area.settori.includes(settore)) {
+              refarea.current.value = area.tipo;
+              setSettori(area.settori);
+              setFormValues((prevState) => ({
+                ...prevState,
+                ssd: settore,
+              }));
+              break;
+            }
           }
+          setTotaleCfu(totcfu);
+          setCfuBlocchi(totcfublocchi);
+          setFormValues((prevState) => ({
+            ...prevState,
+            insegnamentiinseriti: insegnamenticorso,
+          }));
         }
-        setTotaleCfu(totcfu);
-        setCfuBlocchi(totcfublocchi);
-        setFormValues((prevState) => ({
-          ...prevState,
-          insegnamentiinseriti: insegnamenticorso,
-        }));
       });
   }
 

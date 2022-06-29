@@ -223,4 +223,67 @@ async function autenticazione(req_body) {
   return returndata;
 }
 
-module.exports = { registrazione, autenticazione };
+async function corsidistudio() {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", user: null, corsi: null };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // recupero tutti i CdS
+      results = await db.query("SELECT * FROM `Corsi`").catch((err) => {
+        throw err;
+      });
+    });
+
+    returndata.corsi = results;
+  } catch (err) {
+    returndata.errcode = 500;
+    returndata.errmsg = "Impossibile recuperare i Corsi di Studio";
+  }
+
+  return returndata;
+}
+
+async function insegnamentiattivi() {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = {
+    errcode: 200,
+    errmsg: "OK",
+    insegnamenti: null,
+  };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // recupero gli insegnamenti attivi nei vari cds
+      results = await db
+        .query(
+          "SELECT * FROM `Erogazione` `e`\
+          JOIN `Insegnamenti` `i` ON (`i`.IDIns = `e`.`IDIns`)"
+        )
+        .catch((err) => {
+          throw err;
+        });
+
+      returndata.insegnamenti = results;
+    });
+  } catch (err) {
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile recuperare insegnamenti attivi";
+  }
+  return returndata;
+}
+
+module.exports = {
+  registrazione,
+  autenticazione,
+  corsidistudio,
+  insegnamentiattivi,
+};
