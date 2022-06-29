@@ -16,10 +16,13 @@ import LandingPage from "./LandingPage";
 import SignCdSPage from "./student/SignCdSPage";
 import MyCarreerPage from "./student/MyCarreerPage";
 import StudentCounsellingPage from "./student/StudentCounsellingPage";
+import StudentExamPage from "./student/StudentExamPage";
 import PayTaxesPage from "./student/PayTaxesPage";
 
 import MyTeachingsPage from "./professor/MyTeachingsPage";
 import ProfCounsellingPage from "./professor/ProfCounsellingPage";
+import ProfExamPage from "./professor/ProfExamPage";
+import ProfGradeExamPage from "./professor/ProfGradeExamPage";
 
 import AddProfessorPage from "./admin/AddProfessorPage";
 import AddTeachingPage from "./admin/AddTeachingPage";
@@ -94,12 +97,24 @@ function App() {
           element={<StudentCounsellingPage auth={auth} />}
         />
         <Route
+          path="/students/listExam"
+          element={<StudentExamPage auth={auth} />}
+        />
+        <Route
           path="/professors/myTeachings"
           element={<MyTeachingsPage auth={auth} setAuth={setAuth} />}
         />
         <Route
           path="/professors/listCounselling"
           element={<ProfCounsellingPage auth={auth} />}
+        />
+        <Route
+          path="/professors/listExam"
+          element={<ProfExamPage auth={auth} />}
+        />
+        <Route
+          path="/professors/gradeExam"
+          element={<ProfGradeExamPage auth={auth} />}
         />
         <Route
           path="/admin/addProfessor"

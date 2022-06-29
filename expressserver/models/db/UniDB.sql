@@ -154,7 +154,7 @@ ALTER TABLE `AnagraficaStudenti`
 CREATE TABLE IF NOT EXISTS `Esami` (
   `IDEsame` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `IDIns` int UNSIGNED NOT NULL,
-  `IDCorso` int UNSIGNED NOT NULL,
+  `MatDocente` int UNSIGNED NOT NULL,
   `Data` timestamp NOT NULL,
   `Sede` varchar(200) NOT NULL,
   `Sessione` ENUM('Autunnale', 'Invernale', 'Primaverile', 'Estiva') NOT NULL,
@@ -164,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `Esami` (
 
 ALTER TABLE `Esami`
   ADD CONSTRAINT `Esami_ibfk_1` FOREIGN KEY (`IDIns`) REFERENCES `Insegnamenti` (`IDIns`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `Esami_ibfk_2` FOREIGN KEY (`IDCorso`) REFERENCES `Corsi` (`IDCorso`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `Esami_ibfk_2` FOREIGN KEY (`MatDocente`) REFERENCES `Docenti` (`Matricola`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- --------------------------------------------------------
 

@@ -182,6 +182,8 @@ async function riceviInsegnamenti() {
   const db = await makeDb(config);
 
   // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", teachings: null };
+
   let results = {};
 
   try {
@@ -195,13 +197,13 @@ async function riceviInsegnamenti() {
         .catch((err) => {
           throw err;
         });
+      returndata.teachings = results;
     });
-
-    return results;
   } catch (err) {
-    console.log(err);
-    next(createError(500));
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile recuperare Insegnamenti";
   }
+  return returndata;
 }
 
 async function riceviDocenti() {
@@ -209,6 +211,7 @@ async function riceviDocenti() {
   const db = await makeDb(config);
 
   // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", professors: null };
   let results = {};
 
   try {
@@ -223,13 +226,14 @@ async function riceviDocenti() {
         .catch((err) => {
           throw err;
         });
-    });
 
-    return results;
+      returndata.professors = results;
+    });
   } catch (err) {
-    console.log(err);
-    next(createError(500));
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile recuperare Insegnamenti";
   }
+  return returndata;
 }
 
 async function controlloCFU(req_body) {
@@ -654,6 +658,7 @@ async function riceviStudenti() {
   const db = await makeDb(config);
 
   // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", students: null };
   let results = {};
 
   try {
@@ -670,12 +675,83 @@ async function riceviStudenti() {
         .catch((err) => {
           throw err;
         });
+      returndata.students = results;
     });
-    return results;
+  } catch (err) {
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile ricevere i dati degli studenti";
+  }
+  return returndata;
+}
+
+async function convalidatasse(req_body) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", students: null };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // controllo se lo studente esiste
+      results = await db
+        .query("SELECT * FROM `Studenti`\
+        WHERE Matricola = ?", [
+          req_body.studente,
+        ])
+        .catch((err) => {
+          throw err;
+        });
+
+      if (results.length == 0) {
+        console.log("Studente non trovato!");
+        returndata.errcode = 404;
+        returndata.errmsg = "Studente non trovato";
+      } else {
+        let modificarata = null;
+
+        if (req_body.rata === 1) {
+          modificarata = "PrimaRata";
+        } else if (req_body.rata === 2) {
+          modificarata = "SecondaRata";
+        }
+
+        if (modificarata) {
+          results = await db
+            .query(
+              "UPDATE `Studenti` \
+            SET ?? = TRUE \
+            WHERE `Matricola` = ?",
+              [modificarata, req_body.studente]
+            )
+            .catch((err) => {
+              throw err;
+            });
+        }
+
+        results = await db
+          .query(
+            "SELECT `s`.Matricola, Cognome, Nome, Email, Reddito, \
+          PrimaRata, SecondaRata \
+          FROM `Studenti` `s`\
+          JOIN `AnagraficaStudenti` `as` ON (`s`.Matricola = `as`.Matricola )\
+          ORDER BY `as`.Cognome, `as`.Nome"
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        returndata.students = results;
+      }
+    });
   } catch (err) {
     console.log(err);
-    next(createError(500));
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile aggiornare tasse";
   }
+
+  return returndata;
 }
 
 module.exports = {
@@ -689,4 +765,5 @@ module.exports = {
   modificaCorso,
   eliminaCorso,
   riceviStudenti,
+  convalidatasse,
 };

@@ -179,8 +179,186 @@ async function aggiungiricevimento(req_body, matricola) {
   return returndata;
 }
 
+async function esamidocente(matricola) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", esami: null };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // controllo se il docente esiste
+      results = await db
+        .query("SELECT * FROM `Docenti`\
+        WHERE Matricola = ?", [
+          matricola,
+        ])
+        .catch((err) => {
+          throw err;
+        });
+
+      if (results.length == 0) {
+        console.log("Docente non trovato!");
+        returndata.errcode = 404;
+        returndata.errmsg = "Docente non trovato";
+      } else {
+        // recupero i ricevimenti del docente
+        results = await db
+          .query(
+            "SELECT * \
+            FROM `Esami` `e` \
+            WHERE MatDocente = ? \
+            ORDER BY `e`.`Data`",
+            [matricola]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        returndata.esami = results;
+      }
+    });
+  } catch (err) {
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile recuperare esami del docente";
+  }
+
+  return returndata;
+}
+
+async function aggiungiesame(req_body, matricola) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", esami: null };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // controllo se il docente esiste
+      results = await db
+        .query("SELECT * FROM `Docenti`\
+        WHERE Matricola = ?", [
+          matricola,
+        ])
+        .catch((err) => {
+          throw err;
+        });
+
+      if (results.length == 0) {
+        console.log("Docente non trovato!");
+        returndata.errcode = 404;
+        returndata.errmsg = "Docente non trovato";
+      } else {
+        // creo la data
+        let data = new Date(req_body.date);
+        data.setHours(req_body.time.split(":")[0]);
+        data.setMinutes(req_body.time.split(":")[1]);
+
+        //aggiungo il ricevimento
+        results = await db
+          .query(
+            "INSERT INTO `Esami` (IDIns, MatDocente, Data, Sede, \
+            Sessione, Appello) \
+            SELECT ? AS IDIns, ? AS MatDocente, ? AS Data, \
+            ? AS Sede, ? AS Sessione, ? AS Appello",
+            [
+              req_body.idins,
+              matricola,
+              data,
+              req_body.location,
+              req_body.session,
+              req_body.number,
+            ]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        // recupero i ricevimenti del docente
+        results = await db
+          .query(
+            "SELECT * \
+            FROM `Esami` `e` \
+            WHERE MatDocente = ? \
+            ORDER BY `e`.`Data`",
+            [matricola]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        returndata.esami = results;
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile aggiungere esame";
+  }
+
+  return returndata;
+}
+
+async function studentiesame(matricola) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", students: null };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // controllo se il docente esiste
+      results = await db
+        .query("SELECT * FROM `Docenti`\
+        WHERE Matricola = ?", [
+          matricola,
+        ])
+        .catch((err) => {
+          throw err;
+        });
+
+      if (results.length == 0) {
+        console.log("Docente non trovato!");
+        returndata.errcode = 404;
+        returndata.errmsg = "Docente non trovato";
+      } else {
+        // recupero gli iscritti gli esami del docente
+        results = await db
+          .query(
+            "SELECT `e`.IDEsame, `s`.Matricola, Cognome, Nome, Email \
+            FROM `Esami` `e` \
+            JOIN `IscrizioneEsame` `ie` ON (`ie`.IDEsame = `e`.`IDEsame`) \
+            JOIN `Studenti` `s` ON (`s`.Matricola = `ie`.MatStudente) \
+            JOIN `AnagraficaStudenti` `as` ON (`as`.Matricola = `s`.Matricola) \
+            WHERE `e`.MatDocente = ? ",
+            [matricola]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        returndata.students = results;
+      }
+    });
+  } catch (err) {
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile recuperare iscritti esame del docente";
+  }
+
+  return returndata;
+}
+
 module.exports = {
   insegnamentidocente,
   ricevimentidocente,
   aggiungiricevimento,
+  esamidocente,
+  aggiungiesame,
+  studentiesame,
 };

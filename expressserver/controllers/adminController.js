@@ -11,6 +11,7 @@ const {
   modificaCorso,
   eliminaCorso,
   riceviStudenti,
+  convalidatasse,
 } = require("../models/adminModel");
 
 const secret = "mysecretsshhh";
@@ -92,62 +93,144 @@ async function add_teaching(req, res) {
 }
 
 async function get_teachings(req, res) {
-  try {
-    let results = await riceviInsegnamenti();
-    res.json(results);
-  } catch (err) {
-    console.log(err);
-    next(createError(500));
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isAdmin) {
+          return riceviInsegnamenti();
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              insegnamenti: results.teachings,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
   }
 }
 
 async function get_professors(req, res) {
-  try {
-    let results = await riceviDocenti();
-    res.json(results);
-  } catch (err) {
-    console.log(err);
-    next(createError(500));
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isAdmin) {
+          return riceviDocenti();
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              docenti: results.professors,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
   }
 }
 
 async function check_prof_cfu(req, res) {
-  try {
-    let results = await controlloCFU(req.body);
-    if (results.errcode !== 200) {
-      res.json({
-        status: results.errcode,
-        message: results.errmsg,
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isAdmin) {
+          return controlloCFU(req.body);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
       });
-    } else {
-      res.json({
-        status: 200,
-        message: "Ok",
-      });
-    }
-  } catch (err) {
-    console.log(err);
-    next(createError(500));
   }
 }
 
 async function check_prof_cfu_edit(req, res) {
-  try {
-    let results = await controlloCFUModifica(req.body);
-    if (results.errcode !== 200) {
-      res.json({
-        status: results.errcode,
-        message: results.errmsg,
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isAdmin) {
+          return controlloCFUModifica(req.body);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
       });
-    } else {
-      res.json({
-        status: 200,
-        message: "Ok",
-      });
-    }
-  } catch (err) {
-    console.log(err);
-    next(createError(500));
   }
 }
 
@@ -263,12 +346,74 @@ async function delete_cds(req, res) {
 }
 
 async function get_students(req, res) {
-  try {
-    let results = await riceviStudenti();
-    res.json(results);
-  } catch (err) {
-    console.log(err);
-    next(createError(500));
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isAdmin) {
+          return riceviStudenti();
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              studenti: results.students,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
+async function validate_tax(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isAdmin) {
+          return convalidatasse(req.body);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              studenti: results.students,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
   }
 }
 
@@ -283,4 +428,5 @@ module.exports = {
   edit_cds,
   delete_cds,
   get_students,
+  validate_tax,
 };

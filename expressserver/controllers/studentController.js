@@ -2,12 +2,13 @@ var createError = require("http-errors");
 
 const {
   iscrizioneCds,
-  corsidistudio,
-  insegnamentiattivi,
   carriera,
   ricevimentistudente,
   iscrizioneRicevimento,
   annullaRicevimento,
+  esamistudente,
+  iscrizioneEsame,
+  annullaEsame,
 } = require("../models/studentModel");
 
 const secret = "mysecretsshhh";
@@ -42,26 +43,6 @@ async function sign_Cds(req, res) {
       .catch((err) => {
         res.json({ status: 401, message: "Unauthorized: Invalid token" });
       });
-  }
-}
-
-async function get_Cds(req, res) {
-  try {
-    let results = await corsidistudio();
-    res.json(results);
-  } catch (err) {
-    console.log(err);
-    next(createError(500));
-  }
-}
-
-async function get_CdsTeachings(req, res) {
-  try {
-    let results = await insegnamentiattivi();
-    res.json(results);
-  } catch (err) {
-    console.log(err);
-    next(createError(500));
   }
 }
 
@@ -193,12 +174,115 @@ async function remove_counselling(req, res) {
   }
 }
 
+async function get_studentexam(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isStudent) {
+          return esamistudente(decoded.data.matricola);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            next(createError(results.errcode, results.errmsg));
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              esami: results.esami,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not a student" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
+async function sign_exam(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isStudent) {
+          return iscrizioneEsame(req.body, decoded.data.matricola);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              esami: results.esami,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not a student" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
+async function remove_exam(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isStudent) {
+          return annullaEsame(req.body, decoded.data.matricola);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            next(createError(results.errcode, results.errmsg));
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              esami: results.esami,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not a student" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
 module.exports = {
   sign_Cds,
-  get_Cds,
-  get_CdsTeachings,
   get_carreer,
   get_studentcounselling,
   sign_counselling,
   remove_counselling,
+  get_studentexam,
+  sign_exam,
+  remove_exam,
 };

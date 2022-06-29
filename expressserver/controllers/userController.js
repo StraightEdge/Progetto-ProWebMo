@@ -1,6 +1,11 @@
 var createError = require("http-errors");
 
-const { registrazione, autenticazione } = require("../models/userModel");
+const {
+  registrazione,
+  autenticazione,
+  corsidistudio,
+  insegnamentiattivi,
+} = require("../models/userModel");
 
 const secret = "mysecretsshhh";
 var redis = require("redis");
@@ -207,4 +212,61 @@ async function logout(req, res) {
   }
 }
 
-module.exports = { sign_on, login, get_profile, logout };
+async function get_Cds(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then(() => {
+        return corsidistudio();
+      })
+      .then((results) => {
+        if (results.errcode !== 200) {
+          next(createError(results.errcode, results.errmsg));
+        } else {
+          res.json({ status: 200, message: "Ok", corsi: results.corsi });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
+async function get_CdsTeachings(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then(() => {
+        return insegnamentiattivi();
+      })
+      .then((results) => {
+        if (results.errcode !== 200) {
+          next(createError(results.errcode, results.errmsg));
+        } else {
+          res.json({
+            status: 200,
+            message: "Ok",
+            insegnamenti: results.insegnamenti,
+          });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
+module.exports = {
+  sign_on,
+  login,
+  get_profile,
+  logout,
+  get_Cds,
+  get_CdsTeachings,
+};

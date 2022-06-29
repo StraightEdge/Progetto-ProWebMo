@@ -20,7 +20,7 @@ function SignCdSPage({ auth, setAuth }) {
   useEffect(() => {
     // scarico i corsi di studio e li salvo in corsi
     async function get_cds() {
-      fetch("http://192.168.1.16:9000/students/getCds", {
+      fetch("http://192.168.1.16:9000/users/getCds", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -33,14 +33,16 @@ function SignCdSPage({ auth, setAuth }) {
       })
         .then((res) => res.json())
         .then((res) => {
-          setLoaded(true);
-          setCorsi(res);
+          if (res.status === 200) {
+            setLoaded(true);
+            setCorsi(res.corsi);
+          }
         });
     }
 
     // scarico gli insegnamenti attivi e li salvo in insegnamenti
     async function get_cdsteachings() {
-      fetch("http://192.168.1.16:9000/students/getCdsTeachings", {
+      fetch("http://192.168.1.16:9000/users/getCdsTeachings", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -53,8 +55,9 @@ function SignCdSPage({ auth, setAuth }) {
       })
         .then((res) => res.json())
         .then((res) => {
-          console.log(res);
-          setInsegnamenti(res);
+          if (res.status === 200) {
+            setInsegnamenti(res.insegnamenti);
+          }
         });
     }
     get_cds();

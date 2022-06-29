@@ -13,6 +13,7 @@ const {
   edit_cds,
   delete_cds,
   get_students,
+  validate_tax,
 } = require("../controllers/adminController");
 
 /* La rotta /users è vietata */
@@ -49,5 +50,8 @@ router.post("/deleteCdS", delete_cds);
 
 /* Scarica Studenti */
 router.get("/getStudents", get_students);
+
+/* Convalida Tassa */
+router.post("/validateTax", validate_tax);
 
 module.exports = router;

@@ -140,7 +140,13 @@ function MyCarreerPage({ auth }) {
                 >
                   Lista Ricevimenti
                 </Button>
-                <Button>Lista Esami </Button>
+                <Button
+                  as={Link}
+                  to={"/students/listExam"}
+                  state={opzioniinsegnamento}
+                >
+                  Lista Esami
+                </Button>
               </ButtonGroup>
             </Alert>
           ) : (

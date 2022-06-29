@@ -111,7 +111,13 @@ function MyTeachingsPage({ auth }) {
                 >
                   Lista Ricevimenti
                 </Button>
-                <Button>Lista Esami </Button>
+                <Button
+                  as={Link}
+                  to={"/professors/listExam"}
+                  state={opzioniinsegnamento}
+                >
+                  Lista Esami
+                </Button>
               </ButtonGroup>
             </Alert>
           ) : (
