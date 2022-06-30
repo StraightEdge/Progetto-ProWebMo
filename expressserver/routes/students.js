@@ -11,6 +11,8 @@ const {
   get_studentexam,
   sign_exam,
   remove_exam,
+  get_examgrade,
+  sign_grade,
 } = require("../controllers/studentController");
 
 /* La rotta /users è vietata */
@@ -36,10 +38,16 @@ router.post("/removeCounselling", remove_counselling);
 /* Recupero esami del corso di studi dello studente */
 router.get("/getStudentExam", get_studentexam);
 
-/* Iscrizione studente ad un resame */
+/* Iscrizione studente ad un esame */
 router.post("/signExam", sign_exam);
 
 /* Annulla iscrizione studente ad un ricevimento */
 router.post("/removeExam", remove_exam);
+
+/* Recupero esiti esami */
+router.get("/getExamGrade", get_examgrade);
+
+/* Sottoscrizione esito esame */
+router.post("/signGrade", sign_grade);
 
 module.exports = router;

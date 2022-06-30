@@ -354,6 +354,59 @@ async function studentiesame(matricola) {
   return returndata;
 }
 
+async function verbalizzastudente(req_body) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK" };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // controllo se lo studente esiste
+      results = await db
+        .query("SELECT * FROM `Studenti`\
+        WHERE Matricola = ?", [
+          req_body.studente.Matricola,
+        ])
+        .catch((err) => {
+          throw err;
+        });
+
+      if (results.length == 0) {
+        console.log("Studente non trovato!");
+        returndata.errcode = 404;
+        returndata.errmsg = "Studente non trovato";
+      } else {
+        // aggiorno carriera studente
+        results = await db
+          .query(
+            "UPDATE `CarrieraStudenti` \
+            SET `IDEsame` = ?, `Domande` = ?, `Esito` = ?, \
+            `Verbalizzazione` = 0 \
+            WHERE `Matricola` = ? AND `IDIns` = ?",
+            [
+              req_body.esame.IDEsame,
+              req_body.questions,
+              req_body.grade,
+              req_body.studente.Matricola,
+              req_body.insegnamento.IDIns,
+            ]
+          )
+          .catch((err) => {
+            throw err;
+          });
+      }
+    });
+  } catch (err) {
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile verbalizzare studente";
+  }
+
+  return returndata;
+}
+
 module.exports = {
   insegnamentidocente,
   ricevimentidocente,
@@ -361,4 +414,5 @@ module.exports = {
   esamidocente,
   aggiungiesame,
   studentiesame,
+  verbalizzastudente,
 };

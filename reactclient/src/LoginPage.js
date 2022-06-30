@@ -80,7 +80,7 @@ function LoginPage({ auth, setAuth }) {
             <></>
           )}
           <p className="lead text-uppercase mt-3">Autenticazione</p>
-          <Form.Group controlId="formUser">
+          <Form.Group >
             <Form.Label>Nome Utente</Form.Label>
             <Form.Control
               required
@@ -96,7 +96,7 @@ function LoginPage({ auth, setAuth }) {
             </Form.Control.Feedback>
           </Form.Group>
 
-          <Form.Group controlId="formPass">
+          <Form.Group >
             <Form.Label>Password</Form.Label>
             <Form.Control
               required

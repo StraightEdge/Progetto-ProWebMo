@@ -117,7 +117,7 @@ function ProfCounsellingPage({ auth }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        // se il server risponde con 200 renderizzo aggiorno i ricevimenti,
+        // se il server risponde con 200 aggiorno i ricevimenti,
         // altrimenti mostro un errore
         if (res.status !== 200) {
           setMessage({
@@ -242,7 +242,6 @@ function ProfCounsellingPage({ auth }) {
                     as="textarea"
                     rows={3}
                     required
-                    defaultValue=""
                     maxLength="200"
                     onChange={handleChange}
                   />

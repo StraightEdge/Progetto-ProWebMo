@@ -279,7 +279,7 @@ function ProfExamPage({ auth }) {
                           to={"/professors/gradeExam"}
                           state={{
                             esame: esame,
-                            insegnamento: insegnamento.Denominazione,
+                            insegnamento: insegnamento,
                           }}
                           variant="success"
                         >

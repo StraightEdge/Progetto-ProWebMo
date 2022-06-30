@@ -556,6 +556,146 @@ async function annullaEsame(req_body, matricola) {
   return returndata;
 }
 
+async function riceviesiti(matricola) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", esami: null };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // controllo se lo studente esiste
+      results = await db
+        .query("SELECT * FROM `Studenti`\
+        WHERE Matricola = ?", [
+          matricola,
+        ])
+        .catch((err) => {
+          throw err;
+        });
+
+      if (results.length == 0) {
+        console.log("Studente non trovato!");
+        returndata.errcode = 404;
+        returndata.errmsg = "Studente non trovato";
+      } else {
+        // recupero gli esami da verbalizzare
+        results = await db
+          .query(
+            "SELECT `e`.IDEsame, `i`.Denominazione AS `Insegnamento`, `i`.CFU, \
+            `ad`.Cognome AS `CognomeDocente`, `ad`.Nome AS `NomeDocente`, \
+            `e`.Data, `cs`.Esito \
+            FROM `CarrieraStudenti` `cs` \
+            JOIN `Esami` `e` ON (`e`.IDEsame = `cs`.IDEsame) \
+            JOIN `Insegnamenti` `i` ON (`i`.IDIns = `e`.IDIns) \
+            JOIN `AnagraficaDocenti` `ad` ON (`ad`.Matricola = `e`.MatDocente) \
+            WHERE `cs`.Matricola = ? AND `cs`.Verbalizzazione = 0",
+            [matricola]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        returndata.esami = results;
+      }
+    });
+  } catch (err) {
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile recuperare esiti esami";
+  }
+
+  return returndata;
+}
+
+async function sottoscriviEsame(req_body, matricola) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", esami: null };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // controllo se lo studente esiste
+      results = await db
+        .query("SELECT * FROM `Studenti`\
+        WHERE Matricola = ?", [
+          matricola,
+        ])
+        .catch((err) => {
+          throw err;
+        });
+
+      if (results.length == 0) {
+        console.log("Studente non trovato!");
+        returndata.errcode = 404;
+        returndata.errmsg = "Studente non trovato";
+      } else {
+        results = await db
+          .query(
+            "SELECT * FROM `Autenticazione` \
+            WHERE MatStudente = ?",
+            [matricola]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        let pwdhash = crypto.createHash("sha512"); // istanziamo l'algoritmo di hashing
+        pwdhash.update(req_body.pass); // cifriamo la password
+        let encpwd = pwdhash.digest("hex"); // otteniamo la stringa esadecimale
+
+        if (encpwd != results[0].Password) {
+          // password non coincidenti
+          console.log("Password errata!");
+          returndata.errcode = 403;
+          returndata.errmsg = "Password errata";
+          return returndata;
+        }
+
+        results = await db
+          .query(
+            "UPDATE `CarrieraStudenti` \
+            SET `Verbalizzazione` = 1 \
+            WHERE `Matricola` = ? AND `IDEsame` = ?",
+            [matricola, req_body.esame.IDEsame]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        // recupero gli esami da verbalizzare
+        results = await db
+          .query(
+            "SELECT `e`.IDEsame, `i`.Denominazione AS `Insegnamento`, `i`.CFU, \
+            `ad`.Cognome AS `CognomeDocente`, `ad`.Nome AS `NomeDocente`, \
+            `e`.Data, `cs`.Esito \
+            FROM `CarrieraStudenti` `cs` \
+            JOIN `Esami` `e` ON (`e`.IDEsame = `cs`.IDEsame) \
+            JOIN `Insegnamenti` `i` ON (`i`.IDIns = `e`.IDIns) \
+            JOIN `AnagraficaDocenti` `ad` ON (`ad`.Matricola = `e`.MatDocente) \
+            WHERE `cs`.Matricola = ? AND `cs`.Verbalizzazione = 0",
+            [matricola]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        returndata.esami = results;
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile sottoscrivere l'esame";
+  }
+
+  return returndata;
+}
+
 module.exports = {
   iscrizioneCds,
   carriera,
@@ -565,4 +705,6 @@ module.exports = {
   esamistudente,
   iscrizioneEsame,
   annullaEsame,
+  riceviesiti,
+  sottoscriviEsame,
 };

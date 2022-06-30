@@ -9,6 +9,7 @@ const {
   get_profexam,
   add_exam,
   get_examstudents,
+  grade_student,
 } = require("../controllers/professorController");
 
 /* La rotta /users è vietata */
@@ -33,5 +34,8 @@ router.post("/addExam", add_exam);
 
 /* Recupero lista studenti iscritti all'esame */
 router.get("/getExamStudents", get_examstudents);
+
+/* Verbalizza esame studente */
+router.post("/gradeStudent", grade_student);
 
 module.exports = router;
