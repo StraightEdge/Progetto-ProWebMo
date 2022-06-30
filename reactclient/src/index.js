@@ -17,6 +17,7 @@ import SignCdSPage from "./student/SignCdSPage";
 import MyCarreerPage from "./student/MyCarreerPage";
 import StudentCounsellingPage from "./student/StudentCounsellingPage";
 import StudentExamPage from "./student/StudentExamPage";
+import StudentGradeExamPage from "./student/StudentGradeExamPage";
 import PayTaxesPage from "./student/PayTaxesPage";
 
 import MyTeachingsPage from "./professor/MyTeachingsPage";
@@ -99,6 +100,11 @@ function App() {
         <Route
           path="/students/listExam"
           element={<StudentExamPage auth={auth} />}
+        />
+
+        <Route
+          path="/students/gradeExam"
+          element={<StudentGradeExamPage auth={auth} />}
         />
         <Route
           path="/professors/myTeachings"

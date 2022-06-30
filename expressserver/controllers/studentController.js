@@ -9,6 +9,8 @@ const {
   esamistudente,
   iscrizioneEsame,
   annullaEsame,
+  riceviesiti,
+  sottoscriviEsame,
 } = require("../models/studentModel");
 
 const secret = "mysecretsshhh";
@@ -276,6 +278,78 @@ async function remove_exam(req, res) {
   }
 }
 
+async function get_examgrade(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isStudent) {
+          return riceviesiti(decoded.data.matricola);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              esami: results.esami,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not a student" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
+async function sign_grade(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isStudent) {
+          return sottoscriviEsame(req.body, decoded.data.matricola);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              esami: results.esami,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not a student" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
 module.exports = {
   sign_Cds,
   get_carreer,
@@ -285,4 +359,6 @@ module.exports = {
   get_studentexam,
   sign_exam,
   remove_exam,
+  get_examgrade,
+  sign_grade,
 };
