@@ -12,6 +12,8 @@ const {
   eliminaCorso,
   riceviStudenti,
   convalidatasse,
+  convalidatirocinio,
+  convalidapf,
 } = require("../models/adminModel");
 
 const secret = "mysecretsshhh";
@@ -417,6 +419,78 @@ async function validate_tax(req, res) {
   }
 }
 
+async function validate_internship(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isAdmin) {
+          return convalidatirocinio(req.body);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              studenti: results.students,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
+async function validate_final(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isAdmin) {
+          return convalidapf(req.body);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              studenti: results.students,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
 module.exports = {
   add_professor,
   add_teaching,
@@ -429,4 +503,6 @@ module.exports = {
   delete_cds,
   get_students,
   validate_tax,
+  validate_internship,
+  validate_final,
 };

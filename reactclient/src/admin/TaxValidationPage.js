@@ -77,14 +77,12 @@ function TaxValidationPage({ auth }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log(res);
         // se il server risponde con 200 aggiorno studenti
         if (res.status === 200) {
           setStudenti(res.studenti);
 
           for (let studente of res.studenti) {
             if (studente.Matricola === matricola) {
-              console.log(studente);
               setConvalidaStudente(studente);
               break;
             }

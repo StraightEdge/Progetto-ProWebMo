@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Alert, Button, ButtonGroup, Container, Table } from "react-bootstrap";
+import {
+  Alert,
+  Button,
+  ButtonGroup,
+  Container,
+  Form,
+  Table,
+} from "react-bootstrap";
 
 function MyTeachingsPage({ auth }) {
   const [insegnamenti, setInsegnamenti] = useState([]);
@@ -8,6 +15,9 @@ function MyTeachingsPage({ auth }) {
   const [errMessage, setErrMessage] = useState();
   const [showalert, setShowAlert] = useState();
   const [opzioniinsegnamento, setOpzioniInsegnamento] = useState();
+  const [file, setFile] = useState();
+  const [fileName, setFileName] = useState("");
+  const [message, setMessage] = useState({ error: false, text: "" });
 
   const refalert = useRef(null);
 
@@ -45,6 +55,40 @@ function MyTeachingsPage({ auth }) {
   useEffect(() => {
     refalert.current?.scrollIntoView({ behavior: "smooth" });
   }, [opzioniinsegnamento]);
+
+  const saveFile = (e) => {
+    setFile(e.target.files[0]);
+    setFileName(e.target.files[0].name);
+  };
+
+  const uploadFile = (e) => {
+    if (file.type !== "application/pdf") {
+      console.log("Il file deve essere un pdf");
+    } else {
+      const richiesta = new FormData();
+      richiesta.append("file", file);
+      richiesta.append("fileName", fileName);
+      richiesta.append("insegnamento", opzioniinsegnamento.IDIns);
+      fetch("http://192.168.1.16:9000/professors/uploadScheda", {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "include",
+        redirect: "follow",
+        referrerPolicy: "no-referrer",
+        body: richiesta,
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (res.status === 200) {
+            setInsegnamenti(res.insegnamenti);
+            setShowAlert(false);
+          } else {
+            setMessage({ error: true, text: res.message });
+          }
+        });
+    }
+  };
 
   // se non sono autenticato visualizzo l'errore con un link
   // alla pagina di login
@@ -90,7 +134,11 @@ function MyTeachingsPage({ auth }) {
                     <td>{insegnamento.CFU}</td>
                     <td>{insegnamento.Anno}</td>
                     <td>{insegnamento.aScelta ? "Sì" : ""}</td>
-                    <td>{insegnamento.SchedaTrasparenza ? "Sì" : "No"}</td>
+                    <td>
+                      {insegnamento.SchedaTrasparenza
+                        ? insegnamento.SchedaTrasparenza
+                        : "---"}
+                    </td>
                   </tr>
                 </>
               ))}
@@ -100,10 +148,14 @@ function MyTeachingsPage({ auth }) {
           {showalert ? (
             <Alert variant="info" ref={refalert}>
               <p>Insegnamento {opzioniinsegnamento.Denominazione}</p>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Carica scheda di trasparenza</Form.Label>
+                <Form.Control type="file" onChange={saveFile} />
+                <Button onClick={uploadFile}>Upload </Button>
+              </Form.Group>
+
               <ButtonGroup>
-                <Button disabled={opzioniinsegnamento.SchedaTrasparenza}>
-                  Inserisci scheda di trasparenza
-                </Button>
                 <Button
                   as={Link}
                   to={"/professors/listCounselling"}
@@ -119,6 +171,18 @@ function MyTeachingsPage({ auth }) {
                   Lista Esami
                 </Button>
               </ButtonGroup>
+            </Alert>
+          ) : (
+            <></>
+          )}
+
+          {message.error ? (
+            <Alert
+              variant="danger"
+              onClose={() => setMessage({ error: false, text: "" })}
+              dismissible
+            >
+              <p>{message.text}</p>
             </Alert>
           ) : (
             <></>

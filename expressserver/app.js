@@ -4,6 +4,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var cors = require("cors");
+const fileupload = require("express-fileupload");
 
 const corsOptions = {
   origin: ["http://localhost:3000", "http://192.168.1.16:3000"],
@@ -27,7 +28,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(fileupload());
+app.use(express.static("public"));
 
 app.options("*", cors(corsOptions));
 

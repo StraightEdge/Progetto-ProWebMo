@@ -10,6 +10,7 @@ const {
   add_exam,
   get_examstudents,
   grade_student,
+  upload_scheda,
 } = require("../controllers/professorController");
 
 /* La rotta /users è vietata */
@@ -37,5 +38,8 @@ router.get("/getExamStudents", get_examstudents);
 
 /* Verbalizza esame studente */
 router.post("/gradeStudent", grade_student);
+
+/* Upload Scheda trasparenza */
+router.post("/uploadScheda", upload_scheda);
 
 module.exports = router;

@@ -9,10 +9,14 @@ function MyCarreerPage({ auth }) {
   const [errMessage, setErrMessage] = useState();
   const [showalert, setShowAlert] = useState();
   const [opzioniinsegnamento, setOpzioniInsegnamento] = useState();
+  const [mediaaritmetica, setMediaAritmetica] = useState();
+  const [mediaponderata, setMediaPonderata] = useState();
+  const [votolaurea, setVotoLaurea] = useState();
 
   const refalert = useRef(null);
   const refcarriera = useRef(null);
   const refmanifesto = useRef(null);
+  const reflaurea = useRef(null);
 
   const stampaCarriera = useReactToPrint({
     content: () => refcarriera.current,
@@ -20,6 +24,10 @@ function MyCarreerPage({ auth }) {
 
   const stampaManifesto = useReactToPrint({
     content: () => refmanifesto.current,
+  });
+
+  const stampaLaurea = useReactToPrint({
+    content: () => reflaurea.current,
   });
 
   // scarico le info del corso di studi
@@ -37,8 +45,43 @@ function MyCarreerPage({ auth }) {
         .then((res) => {
           console.log(res);
           if (res.status === 200) {
-            console.log(res.carriera);
             setInsegnamenti(res.carriera);
+
+            let media = 0;
+            let numeroesami = 0;
+            for (let insegnamento of res.carriera) {
+              if (
+                insegnamento.Esito &&
+                insegnamento.Denominazione !== "Tirocinio" &&
+                insegnamento.Denominazione !== "Prova Finale"
+              ) {
+                media += insegnamento.Esito;
+                numeroesami++;
+              }
+            }
+            media = media / numeroesami;
+
+            setMediaAritmetica(media.toFixed(2));
+
+            media = 0;
+            numeroesami = 0;
+
+            for (let insegnamento of res.carriera) {
+              if (
+                insegnamento.Esito &&
+                insegnamento.Denominazione !== "Tirocinio" &&
+                insegnamento.Denominazione !== "Prova Finale"
+              ) {
+                media += insegnamento.Esito * insegnamento.CFU;
+                numeroesami += insegnamento.CFU;
+              }
+            }
+            media = media / numeroesami;
+
+            setMediaPonderata(media.toFixed(2));
+
+            setVotoLaurea(((media * 110) / 30).toFixed(2));
+
             setLoaded(true);
           } else {
             setErrMessage(res.message);
@@ -81,6 +124,13 @@ function MyCarreerPage({ auth }) {
       // popolo la tabella con i dati che ricevo dal server
       return (
         <Container className="my-3">
+          <h5>Riepilogo Media Voto e Base Voto Laurea</h5>
+          Media Aritmetica: {mediaaritmetica}
+          <br />
+          Media Ponderata: {mediaponderata}
+          <br />
+          Base Voto Laurea: {votolaurea}
+          <h5 className="text-center">Elenco insegnamenti</h5>
           <Table striped hover responsive ref={refcarriera}>
             <thead>
               <tr>
@@ -106,7 +156,11 @@ function MyCarreerPage({ auth }) {
                         <td>{insegnamento.aScelta ? "Sì" : ""}</td>
                         <td>{insegnamento.Blocco}</td>
                         <td>{insegnamento.Esito ? insegnamento.Esito : ""}</td>
-                        <td>{insegnamento.SchedaTrasparenza ? "Sì" : "No"}</td>
+                        <td>
+                          {insegnamento.SchedaTrasparenza
+                            ? insegnamento.SchedaTrasparenza
+                            : "No"}
+                        </td>
                       </tr>
                     </>
                   ) : (
@@ -117,7 +171,7 @@ function MyCarreerPage({ auth }) {
                         <td>{insegnamento.CFU}</td>
                         <td></td>
                         <td></td>
-                        <td>{insegnamento.Esito ? insegnamento.Esito : ""}</td>
+                        <td>{insegnamento.Esito ? "Sostenuto" : ""}</td>
                         <td></td>
                       </tr>
                     </>
@@ -128,11 +182,20 @@ function MyCarreerPage({ auth }) {
               )}
             </tbody>
           </Table>
-
           {showalert ? (
             <Alert variant="info" ref={refalert}>
               <p>Insegnamento {opzioniinsegnamento.Denominazione}</p>
               <ButtonGroup>
+                <Button
+                  disabled={!opzioniinsegnamento.SchedaTrasparenza}
+                  href={
+                    "http://192.168.1.16:9000/schede/" +
+                    opzioniinsegnamento.SchedaTrasparenza
+                  }
+                  target="_blank"
+                >
+                  Scarica Scheda
+                </Button>
                 <Button
                   as={Link}
                   to={"/students/listCounselling"}
@@ -152,19 +215,30 @@ function MyCarreerPage({ auth }) {
           ) : (
             <></>
           )}
-
           <Button variant="info" onClick={stampaCarriera} className="my-3">
             Stampa Carriera
           </Button>
-
           <Button variant="info" onClick={stampaManifesto} className="my-3">
             Stampa Manifesto
           </Button>
-
+          <Button
+            disabled={!auth?.ProvaFinale}
+            variant="info"
+            onClick={stampaLaurea}
+            className="my-3"
+          >
+            Stampa Certificato Laurea
+          </Button>
           <TableManifesto
             insegnamenti={insegnamenti}
             corso={auth.data.cds}
             ref={refmanifesto}
+          />
+          <TableLaurea
+            insegnamenti={insegnamenti}
+            studente={auth.data}
+            voto={votolaurea}
+            ref={reflaurea}
           />
         </Container>
       );
@@ -207,6 +281,59 @@ const TableManifesto = React.forwardRef((props, ref) => {
               </tr>
             </>
           ))}
+        </tbody>
+      </Table>
+    </div>
+  );
+});
+
+// componente da stampare
+const TableLaurea = React.forwardRef((props, ref) => {
+  let insegnamenti = props.insegnamenti;
+  let studente = props.studente;
+  let voto = props.voto;
+  return (
+    <div className="stampa mx-3" ref={ref}>
+      <h2 className="text-center">
+        Certificato Laurea {studente.cognome} {studente.nome}
+      </h2>
+      Si certifica che {studente.cognome} {studente.nome} - Matricola{" "}
+      {studente.matricola}
+      <br />
+      Nato a {studente.luogo_nascita} il{" "}
+      {new Date(studente.data_nascita).toLocaleDateString()} ha conseguito in
+      questa Università la laurea di dottore in {studente.cds}.
+      <br />
+      Con voto {Math.ceil(voto)}/110
+      <h4 className="text-center">Esami sostenuti</h4>
+      <Table striped hover responsive>
+        <thead>
+          <tr>
+            <th>Anno</th>
+            <th>Denominazione</th>
+            <th>CFU</th>
+            <th>Docente</th>
+            <th>Esito</th>
+          </tr>
+        </thead>
+        <tbody>
+          {insegnamenti.map((insegnamento) =>
+            insegnamento.Esito ? (
+              <>
+                <tr>
+                  <td>{insegnamento.Anno}</td>
+                  <td>{insegnamento.Denominazione}</td>
+                  <td>{insegnamento.CFU}</td>
+                  <td>
+                    {insegnamento.CognomeDocente} {insegnamento.NomeDocente}
+                  </td>
+                  <td>{insegnamento.Esito}</td>
+                </tr>
+              </>
+            ) : (
+              <></>
+            )
+          )}
         </tbody>
       </Table>
     </div>
