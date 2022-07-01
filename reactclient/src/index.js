@@ -30,6 +30,7 @@ import AddTeachingPage from "./admin/AddTeachingPage";
 import AddCdSPage from "./admin/AddCdSPage";
 import EditCdSPage from "./admin/EditCdSPage";
 import TaxValidationPage from "./admin/TaxValidationPage";
+import DegreeValidationPage from "./admin/DegreeValidationPage";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./css/stampa.css";
@@ -135,6 +136,10 @@ function App() {
         <Route
           path="/admin/validateTax"
           element={<TaxValidationPage auth={auth} />}
+        />
+        <Route
+          path="/admin/validateDegree"
+          element={<DegreeValidationPage auth={auth} />}
         />
         <Route path="/error" element={<ErrorPage />} />
         <Route path="/landing" element={<LandingPage />} />

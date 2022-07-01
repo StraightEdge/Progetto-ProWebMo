@@ -21,6 +21,9 @@ function AdminNavBar() {
       <NavDropdown.Item as={Link} to="/admin/validateTax">
         Convalida Tasse Studenti
       </NavDropdown.Item>
+      <NavDropdown.Item as={Link} to="/admin/validateDegree">
+        Convalida Tirocinio/Prova Finale
+      </NavDropdown.Item>
     </>
   );
 }

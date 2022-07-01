@@ -8,6 +8,7 @@ const {
   aggiungiesame,
   studentiesame,
   verbalizzastudente,
+  caricascheda,
 } = require("../models/professorModel");
 
 const secret = "mysecretsshhh";
@@ -223,7 +224,6 @@ async function grade_student(req, res) {
       .verify(token, secret)
       .then((decoded) => {
         if (decoded.isProfessor) {
-          console.log("Is professor");
           return verbalizzastudente(req.body);
         }
       })
@@ -247,6 +247,39 @@ async function grade_student(req, res) {
   }
 }
 
+async function upload_scheda(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isProfessor) {
+          return caricascheda(req, decoded.data.matricola);
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            next(createError(results.errcode, results.errmsg));
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              insegnamenti: results.insegnamenti,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not a professor" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
 module.exports = {
   get_profteachings,
   get_profcounselling,
@@ -255,4 +288,5 @@ module.exports = {
   add_exam,
   get_examstudents,
   grade_student,
+  upload_scheda,
 };

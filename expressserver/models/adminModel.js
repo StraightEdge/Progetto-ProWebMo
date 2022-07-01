@@ -667,7 +667,7 @@ async function riceviStudenti() {
       results = await db
         .query(
           "SELECT `s`.Matricola, Cognome, Nome, Email, Reddito, \
-          PrimaRata, SecondaRata \
+          PrimaRata, SecondaRata, Tirocinio, ProvaFinale \
           FROM `Studenti` `s`\
           JOIN `AnagraficaStudenti` `as` ON (`s`.Matricola = `as`.Matricola )\
           ORDER BY `as`.Cognome, `as`.Nome"
@@ -717,6 +717,7 @@ async function convalidatasse(req_body) {
           modificarata = "SecondaRata";
         }
 
+        // aggiorno tassa studente
         if (modificarata) {
           results = await db
             .query(
@@ -733,7 +734,86 @@ async function convalidatasse(req_body) {
         results = await db
           .query(
             "SELECT `s`.Matricola, Cognome, Nome, Email, Reddito, \
-          PrimaRata, SecondaRata \
+          PrimaRata, SecondaRata, Tirocinio, ProvaFinale \
+          FROM `Studenti` `s`\
+          JOIN `AnagraficaStudenti` `as` ON (`s`.Matricola = `as`.Matricola )\
+          ORDER BY `as`.Cognome, `as`.Nome"
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        returndata.students = results;
+      }
+    });
+  } catch (err) {
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile aggiornare tasse";
+  }
+
+  return returndata;
+}
+
+async function convalidatirocinio(req_body) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", students: null };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // controllo se lo studente esiste
+      results = await db
+        .query("SELECT * FROM `Studenti`\
+        WHERE Matricola = ?", [
+          req_body.studente,
+        ])
+        .catch((err) => {
+          throw err;
+        });
+
+      if (results.length == 0) {
+        console.log("Studente non trovato!");
+        returndata.errcode = 404;
+        returndata.errmsg = "Studente non trovato";
+      } else {
+        // recupero carriera studente
+        results = await db
+          .query(
+            "SELECT * FROM `CarrieraStudenti` `cs` \
+            WHERE Matricola = ?",
+            [req_body.studente]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        if (results.length === 0) {
+          console.log("Studente non iscritto ad un CdS");
+          returndata.errcode = 406;
+          returndata.errmsg = "Lo studente non è iscritto ad un CdS";
+          return returndata;
+        }
+
+        // aggiorno tirocinio studente
+        results = await db
+          .query(
+            "UPDATE `Studenti` \
+            SET Tirocinio = TRUE \
+            WHERE `Matricola` = ?",
+            [req_body.studente]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        // recupero la lista aggiornata degli studenti
+        results = await db
+          .query(
+            "SELECT `s`.Matricola, Cognome, Nome, Email, Reddito, \
+          PrimaRata, SecondaRata, Tirocinio, ProvaFinale \
           FROM `Studenti` `s`\
           JOIN `AnagraficaStudenti` `as` ON (`s`.Matricola = `as`.Matricola )\
           ORDER BY `as`.Cognome, `as`.Nome"
@@ -748,7 +828,106 @@ async function convalidatasse(req_body) {
   } catch (err) {
     console.log(err);
     returndata.errcode = 404;
-    returndata.errmsg = "Impossibile aggiornare tasse";
+    returndata.errmsg = "Impossibile aggiornare tirocinio";
+  }
+
+  return returndata;
+}
+
+async function convalidapf(req_body) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", students: null };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // controllo se lo studente esiste
+      let studente = await db
+        .query("SELECT * FROM `Studenti`\
+        WHERE Matricola = ?", [
+          req_body.studente,
+        ])
+        .catch((err) => {
+          throw err;
+        });
+
+      if (studente.length == 0) {
+        console.log("Studente non trovato!");
+        returndata.errcode = 404;
+        returndata.errmsg = "Studente non trovato";
+      } else {
+        // recupero carriera studente
+        results = await db
+          .query(
+            "SELECT * FROM `CarrieraStudenti` `cs` \
+            WHERE Matricola = ?",
+            [req_body.studente]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        // controllo se lo studente è iscritto ad un CdS
+        // ed ha sostenuto tutti gli esami
+        if (results.length === 0) {
+          console.log("Studente non iscritto ad un CdS");
+          returndata.errcode = 406;
+          returndata.errmsg = "Lo studente non è iscritto ad un CdS";
+          return returndata;
+        } else {
+          for (let esame of results) {
+            if (esame.Verbalizzazione !== 1) {
+              returndata.errcode = 407;
+              returndata.errmsg =
+                "Lo studente non ha sostenuto tutti gli esami";
+              return returndata;
+            }
+          }
+        }
+
+        // controllo se lo studente ha sostenuto il tirocinio
+        if (!studente[0].Tirocinio) {
+          console.log("Studente non tirocinato!");
+          returndata.errcode = 405;
+          returndata.errmsg = "Lo studente non ha sostenuto il tirocinio";
+          return returndata;
+        }
+
+        // aggiorno prova finale studente
+        results = await db
+          .query(
+            "UPDATE `Studenti` \
+            SET ProvaFinale = TRUE \
+            WHERE `Matricola` = ?",
+            [req_body.studente]
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        // recupero la lista aggiornata degli studenti
+        results = await db
+          .query(
+            "SELECT `s`.Matricola, Cognome, Nome, Email, Reddito, \
+          PrimaRata, SecondaRata, Tirocinio, ProvaFinale \
+          FROM `Studenti` `s`\
+          JOIN `AnagraficaStudenti` `as` ON (`s`.Matricola = `as`.Matricola )\
+          ORDER BY `as`.Cognome, `as`.Nome"
+          )
+          .catch((err) => {
+            throw err;
+          });
+
+        returndata.students = results;
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile aggiornare tirocinio";
   }
 
   return returndata;
@@ -766,4 +945,6 @@ module.exports = {
   eliminaCorso,
   riceviStudenti,
   convalidatasse,
+  convalidatirocinio,
+  convalidapf,
 };

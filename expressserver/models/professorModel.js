@@ -2,6 +2,7 @@
 const crypto = require("crypto");
 const { config } = require("./db/config");
 const { makeDb, withTransaction } = require("./db/dbmiddleware");
+var path = require("path");
 
 async function insegnamentidocente(matricola) {
   // istanziamo il middleware
@@ -407,6 +408,64 @@ async function verbalizzastudente(req_body) {
   return returndata;
 }
 
+async function caricascheda(req, matricola) {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", insegnamenti: null };
+  let results = {};
+
+  const newpath = path.join(__dirname, "..", "public/schede/");
+  const file = req.files.file;
+  file.mv(`${newpath}${req.body.fileName}`, (err) => {
+    if (err) {
+      console.log("Errore nell'upload del file");
+      returndata = { errcode: 500, errmsg: "Errore nell'upload del file" };
+      return returndata;
+    }
+  });
+
+  try {
+    await withTransaction(db, async () => {
+      // aggiorno link scheda trasparenza
+      results = await db
+        .query(
+          "UPDATE `Erogazione` \
+            SET `SchedaTrasparenza` = ? \
+            WHERE `MatDocente` = ? AND `IDIns` = ?",
+          [req.body.fileName, matricola, req.body.insegnamento]
+        )
+        .catch((err) => {
+          throw err;
+        });
+
+      // recupero gli insegnamenti del docente
+      results = await db
+        .query(
+          "SELECT `e`.IDIns, `c`.Denominazione AS `Corso`, `c`.`AnnoAccademico`, `i`.`Denominazione`, \
+            CFU, `e`.`Anno`, aScelta, SchedaTrasparenza \
+            FROM `Erogazione` `e` \
+            JOIN `Corsi` `c` ON (`c`.`IDCorso` = `e`.`IDCorso`) \
+            JOIN `Insegnamenti` `i` ON (`i`.`IDIns`= `e`.`IDIns`) \
+            WHERE MatDocente = ? \
+            ORDER BY `i`.`Denominazione`",
+          [matricola]
+        )
+        .catch((err) => {
+          throw err;
+        });
+
+      returndata.insegnamenti = results;
+    });
+  } catch (err) {
+    returndata.errcode = 404;
+    returndata.errmsg = "Impossibile caricare scheda";
+  }
+
+  return returndata;
+}
+
 module.exports = {
   insegnamentidocente,
   ricevimentidocente,
@@ -415,4 +474,5 @@ module.exports = {
   aggiungiesame,
   studentiesame,
   verbalizzastudente,
+  caricascheda,
 };

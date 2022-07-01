@@ -14,6 +14,8 @@ const {
   delete_cds,
   get_students,
   validate_tax,
+  validate_internship,
+  validate_final,
 } = require("../controllers/adminController");
 
 /* La rotta /users è vietata */
@@ -53,5 +55,11 @@ router.get("/getStudents", get_students);
 
 /* Convalida Tassa */
 router.post("/validateTax", validate_tax);
+
+/* Convalida Tirocinio */
+router.post("/validateInternship", validate_internship);
+
+/* Convalida Prova Finale */
+router.post("/validateFinal", validate_final);
 
 module.exports = router;
