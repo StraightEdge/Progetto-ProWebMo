@@ -21,10 +21,8 @@ function Header() {
           </Carousel.Caption>
         </Carousel.Item>
       </Carousel>
-      <Container className="d-block d-sm-none bg-info text-white text-center w-100">
-        <h5 style={{ height: "200px", lineHeight: "200px" }}>
-          Portale Studenti Unipa
-        </h5>
+      <Container className="d-block d-sm-none bg-white text-white text-center w-100">
+        <img src="/images/logo-unipa-rainbow2.png" alt="UnipaLogo" />
       </Container>
     </Container>
   );

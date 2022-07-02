@@ -113,11 +113,29 @@ function SignCdSPage({ auth, setAuth }) {
             },
           });
         } else {
-          navigate("/landing", {
-            state: {
-              message: "Utente iscritto al CdS",
-            },
-          });
+          // per applicare i cambiamenti ed aggiornare il token
+          // di autenticazione faccio logout e login
+          fetch("http://192.168.1.16:9000/users/logout", {
+            method: "GET",
+            mode: "cors",
+            cache: "no-cache",
+            credentials: "include",
+            redirect: "follow",
+            referrerPolicy: "no-referrer",
+          })
+            .then((res) => res.json())
+            .then((res) => {
+              if (res.status === 200) {
+                document.cookie =
+                  "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; secure=true;";
+                setAuth(null);
+                navigate("/landing", {
+                  state: {
+                    message: "Utente iscritto al CdS, rieffettuare il login",
+                  },
+                });
+              }
+            });
         }
       });
   };
