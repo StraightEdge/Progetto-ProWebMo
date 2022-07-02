@@ -40,7 +40,10 @@ function AddTeachingPage({ auth }) {
     setValidated(true);
     event.preventDefault();
     event.stopPropagation();
-    if (formValues.name === "Tirocinio" || formValues.name === "Prova Finale") {
+    if (
+      formValues.name.toLowerCase().includes("tirocinio") ||
+      formValues.name.toLowerCase().includes("prova finale")
+    ) {
       setMessage({ error: true, text: "Nome dell'insegnamento non valido" });
       return;
     }

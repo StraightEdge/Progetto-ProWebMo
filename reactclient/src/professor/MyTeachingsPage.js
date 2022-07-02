@@ -152,7 +152,7 @@ function MyTeachingsPage({ auth }) {
               <Form.Group className="mb-3">
                 <Form.Label>Carica scheda di trasparenza</Form.Label>
                 <Form.Control type="file" onChange={saveFile} />
-                <Button onClick={uploadFile}>Upload </Button>
+                <Button className="mt-1" onClick={uploadFile}>Upload </Button>
               </Form.Group>
 
               <ButtonGroup>

@@ -59,7 +59,12 @@ function MyCarreerPage({ auth }) {
                 numeroesami++;
               }
             }
-            media = media / numeroesami;
+
+            if (numeroesami) {
+              media = media / numeroesami;
+            } else {
+              media = 0;
+            }
 
             setMediaAritmetica(media.toFixed(2));
 
@@ -76,7 +81,12 @@ function MyCarreerPage({ auth }) {
                 numeroesami += insegnamento.CFU;
               }
             }
-            media = media / numeroesami;
+
+            if (numeroesami) {
+              media = media / numeroesami;
+            } else {
+              media = 0;
+            }
 
             setMediaPonderata(media.toFixed(2));
 
@@ -222,7 +232,7 @@ function MyCarreerPage({ auth }) {
             Stampa Manifesto
           </Button>
           <Button
-            disabled={!auth?.ProvaFinale}
+            disabled={auth.data.provafinale !== "Si"}
             variant="info"
             onClick={stampaLaurea}
             className="my-3"
