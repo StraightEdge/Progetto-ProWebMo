@@ -634,6 +634,7 @@ async function sottoscriviEsame(req_body, matricola) {
         returndata.errcode = 404;
         returndata.errmsg = "Studente non trovato";
       } else {
+        // convalido lo studente con la password
         results = await db
           .query(
             "SELECT * FROM `Autenticazione` \

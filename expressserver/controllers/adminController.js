@@ -14,6 +14,7 @@ const {
   convalidatasse,
   convalidatirocinio,
   convalidapf,
+  riceviCFUDocenti,
 } = require("../models/adminModel");
 
 const secret = "mysecretsshhh";
@@ -491,6 +492,42 @@ async function validate_final(req, res) {
   }
 }
 
+async function get_profscfu(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    res.json({ status: 401, message: "Unauthorized: No token provided" });
+  } else {
+    jwtr
+      .verify(token, secret)
+      .then((decoded) => {
+        if (decoded.isAdmin) {
+          return riceviCFUDocenti();
+        }
+      })
+      .then((results) => {
+        if (results) {
+          if (results.errcode !== 200) {
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
+          } else {
+            res.json({
+              status: 200,
+              message: "Ok",
+              docenti: results.professors,
+            });
+          }
+        } else {
+          res.json({ status: 401, message: "Unauthorized: Not an Admin" });
+        }
+      })
+      .catch((err) => {
+        res.json({ status: 401, message: "Unauthorized: Invalid token" });
+      });
+  }
+}
+
 module.exports = {
   add_professor,
   add_teaching,
@@ -505,4 +542,5 @@ module.exports = {
   validate_tax,
   validate_internship,
   validate_final,
+  get_profscfu,
 };

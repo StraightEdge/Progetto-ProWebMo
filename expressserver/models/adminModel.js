@@ -933,6 +933,42 @@ async function convalidapf(req_body) {
   return returndata;
 }
 
+async function riceviCFUDocenti() {
+  // istanziamo il middleware
+  const db = await makeDb(config);
+
+  // formattiamo la nostra struttura dati di ritorno
+  let returndata = { errcode: 200, errmsg: "OK", professors: null };
+  let results = {};
+
+  try {
+    await withTransaction(db, async () => {
+      // prendo i docenti con i relativi cfu
+      results = await db
+        .query(
+          "SELECT `CFUDocenti`.MatDocente as Matricola, `ad`.Cognome, `ad`.Nome \
+          , `d`.Email, `d`.SSD, SUM(`CFUDocenti`.CFU) AS `SommaCFU` \
+          FROM (SELECT `i`.CFU, `e`.IDIns, `e`.MatDocente \
+          FROM `Erogazione` `e` \
+          JOIN `Insegnamenti` `i` ON (`e`.IDIns = `i`.IDIns) \
+          GROUP BY `e`.IDIns, `e`.MatDocente) AS `CFUDocenti` \
+          JOIN `AnagraficaDocenti` `ad` ON (`CFUDocenti`.MatDocente = `ad`.`Matricola`) \
+          JOIN `Docenti` `d` ON (`CFUDocenti`.MatDocente = `d`.`Matricola`)\
+          GROUP BY `CFUDocenti`.MatDocente"
+        )
+        .catch((err) => {
+          throw err;
+        });
+
+      returndata.professors = results;
+    });
+  } catch (err) {
+    returndata.errcode = 500;
+    returndata.errmsg = "Impossibile ricevere Docenti e CFU";
+  }
+  return returndata;
+}
+
 module.exports = {
   aggiungiDocente,
   aggiungiInsegnamento,
@@ -947,4 +983,5 @@ module.exports = {
   convalidatasse,
   convalidatirocinio,
   convalidapf,
+  riceviCFUDocenti,
 };

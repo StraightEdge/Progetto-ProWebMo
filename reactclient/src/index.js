@@ -29,6 +29,7 @@ import AddProfessorPage from "./admin/AddProfessorPage";
 import AddTeachingPage from "./admin/AddTeachingPage";
 import AddCdSPage from "./admin/AddCdSPage";
 import EditCdSPage from "./admin/EditCdSPage";
+import ListProfCFUPage from "./admin/ListProfCFUPage";
 import TaxValidationPage from "./admin/TaxValidationPage";
 import DegreeValidationPage from "./admin/DegreeValidationPage";
 
@@ -133,6 +134,10 @@ function App() {
         />
         <Route path="/admin/addCdS" element={<AddCdSPage auth={auth} />} />
         <Route path="/admin/editCdS" element={<EditCdSPage auth={auth} />} />
+        <Route
+          path="/admin/professorsList"
+          element={<ListProfCFUPage auth={auth} />}
+        />
         <Route
           path="/admin/validateTax"
           element={<TaxValidationPage auth={auth} />}
