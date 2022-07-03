@@ -224,13 +224,16 @@ async function grade_student(req, res) {
       .verify(token, secret)
       .then((decoded) => {
         if (decoded.isProfessor) {
-          return verbalizzastudente(req.body);
+          return verbalizzastudente(req.body, decoded.data.matricola);
         }
       })
       .then((results) => {
         if (results) {
           if (results.errcode !== 200) {
-            next(createError(results.errcode, results.errmsg));
+            res.json({
+              status: results.errcode,
+              message: results.errmsg,
+            });
           } else {
             res.json({
               status: 200,

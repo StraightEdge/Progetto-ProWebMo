@@ -355,7 +355,7 @@ async function studentiesame(matricola) {
   return returndata;
 }
 
-async function verbalizzastudente(req_body) {
+async function verbalizzastudente(req_body, matricola) {
   // istanziamo il middleware
   const db = await makeDb(config);
 
@@ -380,6 +380,29 @@ async function verbalizzastudente(req_body) {
         returndata.errcode = 404;
         returndata.errmsg = "Studente non trovato";
       } else {
+        // convalido lo studente con la password
+        results = await db
+          .query(
+            "SELECT * FROM `Autenticazione` \
+            WHERE MatDocente = ?",
+            [matricola]
+          )
+          .catch((err) => {
+            throw err;
+          });
+        
+        let pwdhash = crypto.createHash("sha512"); // istanziamo l'algoritmo di hashing
+        pwdhash.update(req_body.pass); // cifriamo la password
+        let encpwd = pwdhash.digest("hex"); // otteniamo la stringa esadecimale
+
+        if (encpwd != results[0].Password) {
+          // password non coincidenti
+          console.log("Password errata!");
+          returndata.errcode = 403;
+          returndata.errmsg = "Password errata";
+          return returndata;
+        }
+
         // aggiorno carriera studente
         results = await db
           .query(

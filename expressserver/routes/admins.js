@@ -16,6 +16,7 @@ const {
   validate_tax,
   validate_internship,
   validate_final,
+  get_profscfu,
 } = require("../controllers/adminController");
 
 /* La rotta /users è vietata */
@@ -61,5 +62,8 @@ router.post("/validateInternship", validate_internship);
 
 /* Convalida Prova Finale */
 router.post("/validateFinal", validate_final);
+
+/* Scarica Docenti con i loro CFU */
+router.get("/getProfsCFU", get_profscfu);
 
 module.exports = router;

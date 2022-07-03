@@ -105,7 +105,7 @@ function ProfGradeExamPage({ auth }) {
         if (res.status !== 200) {
           setMessage({
             error: true,
-            text: `Impossibile verbalizzare studente`,
+            text: res.message,
           });
         } else {
           // rimuovo l'alert e pulisco il form
@@ -171,26 +171,30 @@ function ProfGradeExamPage({ auth }) {
             </thead>
             <tbody>
               {studenti.map((studente) =>
-                studente.Validato ? (
-                  <>
-                    <tr>
-                      <td>{studente.Matricola}</td>
-                      <td>{studente.Cognome}</td>
-                      <td>{studente.Nome}</td>
-                      <td>{studente.Email}</td>
-                      <td>Sì</td>
-                    </tr>
-                  </>
+                studente.IDEsame === esame.IDEsame ? (
+                  studente.Validato ? (
+                    <>
+                      <tr>
+                        <td>{studente.Matricola}</td>
+                        <td>{studente.Cognome}</td>
+                        <td>{studente.Nome}</td>
+                        <td>{studente.Email}</td>
+                        <td>Sì</td>
+                      </tr>
+                    </>
+                  ) : (
+                    <>
+                      <tr onClick={() => selectStudente(studente)}>
+                        <td>{studente.Matricola}</td>
+                        <td>{studente.Cognome}</td>
+                        <td>{studente.Nome}</td>
+                        <td>{studente.Email}</td>
+                        <td>No</td>
+                      </tr>
+                    </>
+                  )
                 ) : (
-                  <>
-                    <tr onClick={() => selectStudente(studente)}>
-                      <td>{studente.Matricola}</td>
-                      <td>{studente.Cognome}</td>
-                      <td>{studente.Nome}</td>
-                      <td>{studente.Email}</td>
-                      <td>No</td>
-                    </tr>
-                  </>
+                  <></>
                 )
               )}
             </tbody>
@@ -283,6 +287,28 @@ function ProfGradeExamPage({ auth }) {
                         Inserire l'esito
                       </Form.Control.Feedback>
                     </InputGroup>
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col xs={5}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Password</Form.Label>
+                      <Form.Control
+                        required
+                        type="password"
+                        title="Almeno 8 caratteri, una lettera maiuscola e un numero"
+                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$"
+                        size="32"
+                        maxLength="40"
+                        name="pass"
+                        value={formValues["pass"] || ""}
+                        onChange={handleChange}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        Almeno 8 caratteri di cui uno maiuscolo e un numero
+                      </Form.Control.Feedback>
+                    </Form.Group>
                   </Col>
                 </Row>
 
