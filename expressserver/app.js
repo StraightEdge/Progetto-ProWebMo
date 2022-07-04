@@ -7,7 +7,7 @@ var cors = require("cors");
 const fileupload = require("express-fileupload");
 
 const corsOptions = {
-  origin: ["http://localhost:3000", "http://192.168.1.16:3000"],
+  origin: true,
   credentials: true,
 };
 

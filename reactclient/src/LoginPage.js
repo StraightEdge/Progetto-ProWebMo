@@ -16,7 +16,7 @@ function LoginPage({ auth, setAuth }) {
   // invio i dati al server
   const submitForm = (e) => {
     e.preventDefault();
-    fetch("http://192.168.1.16:9000/users/login", {
+    fetch("http://localhost:9000/users/login", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
@@ -80,7 +80,7 @@ function LoginPage({ auth, setAuth }) {
             <></>
           )}
           <p className="lead text-uppercase mt-3">Autenticazione</p>
-          <Form.Group >
+          <Form.Group>
             <Form.Label>Nome Utente</Form.Label>
             <Form.Control
               required
@@ -96,7 +96,7 @@ function LoginPage({ auth, setAuth }) {
             </Form.Control.Feedback>
           </Form.Group>
 
-          <Form.Group >
+          <Form.Group>
             <Form.Label>Password</Form.Label>
             <Form.Control
               required

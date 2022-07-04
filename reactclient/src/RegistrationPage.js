@@ -52,7 +52,7 @@ function RegistrationPage({ auth, setAuth }) {
   // invio i dati al server
   const submitForm = (e) => {
     e.preventDefault();
-    fetch("http://192.168.1.16:9000/users/utenteregistrato", {
+    fetch("http://localhost:9000/users/utenteregistrato", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",

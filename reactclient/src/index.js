@@ -42,7 +42,7 @@ function App() {
   // recupero il profilo e lo salvo in Auth per autenticare l'utente
   useEffect(() => {
     function fetchData() {
-      fetch("http://192.168.1.16:9000/users/profile", {
+      fetch("http://localhost:9000/users/profile", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -70,7 +70,7 @@ function App() {
       {/* Con routes renderizzo una sezione diversa nella zona centrale
        senza renderizzare tutta la pagina */}
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<HomePage auth={auth} setAuth={setAuth} />} />
         <Route
           path="/accedi"
           element={<LoginPage auth={auth} setAuth={setAuth} />}

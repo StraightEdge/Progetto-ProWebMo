@@ -12,7 +12,7 @@ function ProfilePage({ auth, setAuth }) {
   // controllo che il token sia valido
   useEffect(() => {
     async function fetchData() {
-      fetch("http://192.168.1.16:9000/users/profile", {
+      fetch("http://localhost:9000/users/profile", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -42,7 +42,7 @@ function ProfilePage({ auth, setAuth }) {
 
   // funzione di logout che annulla il token e reindirizza alla home
   const logout = () => {
-    fetch("http://192.168.1.16:9000/users/logout", {
+    fetch("http://localhost:9000/users/logout", {
       method: "GET",
       mode: "cors",
       cache: "no-cache",

@@ -12,7 +12,7 @@ function StudentCounsellingPage({ auth }) {
   // scarico la lista dei ricevimenti
   useEffect(() => {
     async function fetchData() {
-      fetch("http://192.168.1.16:9000/students/getStudentCounselling", {
+      fetch("http://localhost:9000/students/getStudentCounselling", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -33,7 +33,7 @@ function StudentCounsellingPage({ auth }) {
 
   // iscrizione studente al ricevimento
   const iscrizioneRicev = (ricevimento) => {
-    fetch("http://192.168.1.16:9000/students/signCounselling", {
+    fetch("http://localhost:9000/students/signCounselling", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
@@ -64,7 +64,7 @@ function StudentCounsellingPage({ auth }) {
 
   // annulla iscrizione studente al ricevimento
   const annullaIscrizione = (ricevimento) => {
-    fetch("http://192.168.1.16:9000/students/removeCounselling", {
+    fetch("http://localhost:9000/students/removeCounselling", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",

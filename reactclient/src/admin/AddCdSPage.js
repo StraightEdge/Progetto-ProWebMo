@@ -49,7 +49,7 @@ function AddCdSPage({ auth }) {
 
     // scarico la lista degli insegnamenti e la salvo in insegnamenti
     async function fetchTeaching() {
-      fetch("http://192.168.1.16:9000/admins/getTeachings", {
+      fetch("http://localhost:9000/admins/getTeachings", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -70,7 +70,7 @@ function AddCdSPage({ auth }) {
 
     // scarico la lista dei professori e la salvo in docenti
     async function fetchProfessors() {
-      fetch("http://192.168.1.16:9000/admins/getProfessors", {
+      fetch("http://localhost:9000/admins/getProfessors", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -150,7 +150,7 @@ function AddCdSPage({ auth }) {
 
     // controllo se i professori insegnano già la materia in due corsi
     // o se erogano più di 21 CFU
-    fetch("http://192.168.1.16:9000/admins/checkProfCFU", {
+    fetch("http://localhost:9000/admins/checkProfCFU", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
@@ -167,7 +167,7 @@ function AddCdSPage({ auth }) {
         if (res.status !== 200) {
           setMessage({ error: true, text: res.message });
         } else {
-          return fetch("http://192.168.1.16:9000/admins/addCdS", {
+          return fetch("http://localhost:9000/admins/addCdS", {
             method: "POST",
             mode: "cors",
             cache: "no-cache",

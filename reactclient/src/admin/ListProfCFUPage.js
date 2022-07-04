@@ -20,7 +20,7 @@ function ListProfCFUPage({ auth }) {
   // scarico la lista dei docenti
   useEffect(() => {
     async function fetchData() {
-      fetch("http://192.168.1.16:9000/admins/getProfsCFU", {
+      fetch("http://localhost:9000/admins/getProfsCFU", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",

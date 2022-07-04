@@ -49,7 +49,7 @@ function EditCdSPage({ auth }) {
   useEffect(() => {
     // scarico i corsi di studio e li salvo in corsi
     async function get_cds() {
-      fetch("http://192.168.1.16:9000/users/getCds", {
+      fetch("http://localhost:9000/users/getCds", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -82,7 +82,7 @@ function EditCdSPage({ auth }) {
 
     // scarico la lista degli insegnamenti e la salvo in insegnamenti
     async function fetchTeaching() {
-      fetch("http://192.168.1.16:9000/admins/getTeachings", {
+      fetch("http://localhost:9000/admins/getTeachings", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -103,7 +103,7 @@ function EditCdSPage({ auth }) {
 
     // scarico la lista dei professori e la salvo in docenti
     async function fetchProfessors() {
-      fetch("http://192.168.1.16:9000/admins/getProfessors", {
+      fetch("http://localhost:9000/admins/getProfessors", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -167,7 +167,7 @@ function EditCdSPage({ auth }) {
   // scarico gli insegnamenti del corso da modificare
   // e li salvo in insegnamentiinseriti
   async function get_cdsteachings(idcorso) {
-    fetch("http://192.168.1.16:9000/users/getCdsTeachings", {
+    fetch("http://localhost:9000/users/getCdsTeachings", {
       method: "GET",
       mode: "cors",
       cache: "no-cache",
@@ -283,7 +283,7 @@ function EditCdSPage({ auth }) {
 
     // controllo se i professori insegnano già la materia in due corsi
     // o se erogano più di 21 CFU
-    fetch("http://192.168.1.16:9000/admins/checkProfCFUEdit", {
+    fetch("http://localhost:9000/admins/checkProfCFUEdit", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
@@ -300,7 +300,7 @@ function EditCdSPage({ auth }) {
         if (res.status !== 200) {
           setMessage({ error: true, text: res.message });
         } else {
-          return fetch("http://192.168.1.16:9000/admins/editCdS", {
+          return fetch("http://localhost:9000/admins/editCdS", {
             method: "POST",
             mode: "cors",
             cache: "no-cache",
@@ -353,7 +353,7 @@ function EditCdSPage({ auth }) {
   const deleteCdS = (e) => {
     e.preventDefault();
 
-    fetch("http://192.168.1.16:9000/admins/deleteCdS", {
+    fetch("http://localhost:9000/admins/deleteCdS", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",

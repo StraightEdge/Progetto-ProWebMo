@@ -16,7 +16,7 @@ function AdminNavBar() {
         Crea Corso di Studi
       </NavDropdown.Item>
       <NavDropdown.Item as={Link} to="/admin/editCdS">
-        Modifica Corso di Studi
+        Gestione Corso di Studi
       </NavDropdown.Item>
       <NavDropdown.Item as={Link} to="/admin/professorsList">
         Lista Docenti
