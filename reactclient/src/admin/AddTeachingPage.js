@@ -55,7 +55,7 @@ function AddTeachingPage({ auth }) {
   // invio i dati al server
   const submitForm = (e) => {
     e.preventDefault();
-    fetch("http://192.168.1.16:9000/admins/addTeaching", {
+    fetch("http://localhost:9000/admins/addTeaching", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",

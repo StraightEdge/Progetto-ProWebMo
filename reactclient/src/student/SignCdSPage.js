@@ -20,7 +20,7 @@ function SignCdSPage({ auth, setAuth }) {
   useEffect(() => {
     // scarico i corsi di studio e li salvo in corsi
     async function get_cds() {
-      fetch("http://192.168.1.16:9000/users/getCds", {
+      fetch("http://localhost:9000/users/getCds", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -42,7 +42,7 @@ function SignCdSPage({ auth, setAuth }) {
 
     // scarico gli insegnamenti attivi e li salvo in insegnamenti
     async function get_cdsteachings() {
-      fetch("http://192.168.1.16:9000/users/getCdsTeachings", {
+      fetch("http://localhost:9000/users/getCdsTeachings", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -89,7 +89,7 @@ function SignCdSPage({ auth, setAuth }) {
   // invio i dati al server
   const submitForm = (e) => {
     e.preventDefault();
-    fetch("http://192.168.1.16:9000/students/iscrizioneCds", {
+    fetch("http://localhost:9000/students/iscrizioneCds", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
@@ -115,7 +115,7 @@ function SignCdSPage({ auth, setAuth }) {
         } else {
           // per applicare i cambiamenti ed aggiornare il token
           // di autenticazione faccio logout e login
-          fetch("http://192.168.1.16:9000/users/logout", {
+          fetch("http://localhost:9000/users/logout", {
             method: "GET",
             mode: "cors",
             cache: "no-cache",

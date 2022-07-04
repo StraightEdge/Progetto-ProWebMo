@@ -25,7 +25,7 @@ function ProfExamPage({ auth }) {
   // scarico la lista degli esami
   useEffect(() => {
     async function fetchData() {
-      fetch("http://192.168.1.16:9000/professors/getProfExam", {
+      fetch("http://localhost:9000/professors/getProfExam", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -202,7 +202,7 @@ function ProfExamPage({ auth }) {
 
   // invio i dati al server
   const submitForm = (e) => {
-    fetch("http://192.168.1.16:9000/professors/addExam", {
+    fetch("http://localhost:9000/professors/addExam", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",

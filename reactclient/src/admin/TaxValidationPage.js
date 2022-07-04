@@ -24,7 +24,7 @@ function TaxValidationPage({ auth }) {
   // scarico la lista degli studenti
   useEffect(() => {
     async function fetchData() {
-      fetch("http://192.168.1.16:9000/admins/getStudents", {
+      fetch("http://localhost:9000/admins/getStudents", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -63,7 +63,7 @@ function TaxValidationPage({ auth }) {
   // iscrizione studente al ricevimento
   const convalidaRata = (matricola, rata) => {
     let richiesta = { studente: matricola, rata: rata };
-    fetch("http://192.168.1.16:9000/admins/validateTax", {
+    fetch("http://localhost:9000/admins/validateTax", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",

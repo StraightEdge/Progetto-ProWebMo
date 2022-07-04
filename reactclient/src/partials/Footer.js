@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+
 import { Container, ListGroup, Row } from "react-bootstrap";
 
 function Footer() {
@@ -11,79 +13,30 @@ function Footer() {
           <p>
             90133 - PALERMO Codice Fiscale 80023730825, Partita IVA 00605880822
           </p>
-          <p>
-            <i className="fas fa-envelope"></i>
-            <a
-              href="mailto:pippo@topolinia.disney.com "
-              style={{ marginLeft: "5px" }}
-            >
-              pippo@topolinia.disney.com
-            </a>
-          </p>
-          <p className="lead">Seguici su</p>
-          <p>
-            <a href="# ">
-              <i
-                className="fab fa-facebook-square"
-                style={{ fontSize: "24px", color: "#3b5998" }}
-              ></i>
-            </a>
-            <a href="# ">
-              <i
-                className="fab fa-twitter-square"
-                style={{
-                  fontSize: "24px",
-                  color: "#1da1f2",
-                  marginLeft: "5px",
-                }}
-              ></i>
-            </a>
-            <a href="# ">
-              <i
-                className="fab fa-instagram"
-                style={{
-                  fontSize: "24px",
-                  color: "#e56969",
-                  marginLeft: "5px",
-                }}
-              ></i>
-            </a>
-          </p>
+          <p></p>
         </Container>
         <Container className="col-sm-6 text-justify">
-          <p className="lead">I nostri partner</p>
+          <p className="lead">Sviluppatori</p>
           <ListGroup>
             <ListGroup.Item>
-              <img
-                src="/images/ibm_icon_130909.png"
-                width={"40px"}
-                alt="Partner 1"
-              />
-              <h5>Partner 1</h5>
-              <span className="text-info">Azienda specializzata in ...</span>
+              <h5>Pietro Lo Iacono</h5>
+              <Link to="mailto:pietro.loiacono@community.unipa.it">
+                pietro.loiacono@community.unipa.it{" "}
+              </Link>
             </ListGroup.Item>
             <ListGroup.Item>
-              <img
-                src="/images/google_logo_icon.png"
-                width={"40px"}
-                alt="Partner 2"
-              />
-              <h5>Partner 2</h5>
-              <span className="text-info">Leader nel settore ...</span>
+              <h5>Calogero</h5>
+              <Link to="mailto:">email1@community.unipa.it</Link>
             </ListGroup.Item>
             <ListGroup.Item>
-              <img
-                src="/images/intel_2120.png "
-                width={"40px"}
-                alt="Partner 3"
-              />
-              <h5>Partner 3</h5>
-              <span className="text-info">Azienda leader ...</span>
+              <h5>Giuseppe</h5>
+              <Link to="mailto:">email2@community.unipa.it</Link>
+            </ListGroup.Item>
+            <ListGroup.Item>
+              <h5>Mirko</h5>
+              <Link to="mailto:">email3@community.unipa.it</Link>
             </ListGroup.Item>
           </ListGroup>
-          <p className="font-italic mt-3" style={{ fontSize: "1.1rem" }}>
-            &copy; Roberto Pirrone
-          </p>
         </Container>
       </Row>
     </Container>

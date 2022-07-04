@@ -33,7 +33,7 @@ function MyCarreerPage({ auth }) {
   // scarico le info del corso di studi
   useEffect(() => {
     async function fetchData() {
-      fetch("http://192.168.1.16:9000/students/getCarriera", {
+      fetch("http://localhost:9000/students/getCarriera", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -199,7 +199,7 @@ function MyCarreerPage({ auth }) {
                 <Button
                   disabled={!opzioniinsegnamento.SchedaTrasparenza}
                   href={
-                    "http://192.168.1.16:9000/schede/" +
+                    "http://localhost:9000/schede/" +
                     opzioniinsegnamento.SchedaTrasparenza
                   }
                   target="_blank"

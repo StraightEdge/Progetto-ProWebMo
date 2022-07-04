@@ -25,7 +25,7 @@ function DegreeValidationPage({ auth }) {
   // scarico la lista degli studenti
   useEffect(() => {
     async function fetchData() {
-      fetch("http://192.168.1.16:9000/admins/getStudents", {
+      fetch("http://localhost:9000/admins/getStudents", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -64,7 +64,7 @@ function DegreeValidationPage({ auth }) {
   // convalida tirocinio studente
   const convalidaTirocinio = (matricola) => {
     let richiesta = { studente: matricola };
-    fetch("http://192.168.1.16:9000/admins/validateInternship", {
+    fetch("http://localhost:9000/admins/validateInternship", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
@@ -102,7 +102,7 @@ function DegreeValidationPage({ auth }) {
   // convalida prova finale studente
   const convalidaProvaFinale = (matricola) => {
     let richiesta = { studente: matricola };
-    fetch("http://192.168.1.16:9000/admins/validateFinal", {
+    fetch("http://localhost:9000/admins/validateFinal", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",

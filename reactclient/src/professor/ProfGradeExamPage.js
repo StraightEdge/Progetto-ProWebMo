@@ -34,7 +34,7 @@ function ProfGradeExamPage({ auth }) {
   // scarico la lista degli studenti iscritti all'esame
   useEffect(() => {
     async function fetchData() {
-      fetch("http://192.168.1.16:9000/professors/getExamStudents", {
+      fetch("http://localhost:9000/professors/getExamStudents", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -86,7 +86,7 @@ function ProfGradeExamPage({ auth }) {
 
   // invio i dati al server
   const submitForm = (e) => {
-    fetch("http://192.168.1.16:9000/professors/gradeStudent", {
+    fetch("http://localhost:9000/professors/gradeStudent", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",

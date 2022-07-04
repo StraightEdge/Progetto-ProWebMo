@@ -24,7 +24,7 @@ function MyTeachingsPage({ auth }) {
   // controllo che il token sia valido
   useEffect(() => {
     async function fetchData() {
-      fetch("http://192.168.1.16:9000/professors/getProfTeachings", {
+      fetch("http://localhost:9000/professors/getProfTeachings", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -69,7 +69,7 @@ function MyTeachingsPage({ auth }) {
       richiesta.append("file", file);
       richiesta.append("fileName", fileName);
       richiesta.append("insegnamento", opzioniinsegnamento.IDIns);
-      fetch("http://192.168.1.16:9000/professors/uploadScheda", {
+      fetch("http://localhost:9000/professors/uploadScheda", {
         method: "POST",
         mode: "cors",
         cache: "no-cache",

@@ -13,7 +13,7 @@ function StudentExamPage({ auth }) {
   // scarico la lista degli esami
   useEffect(() => {
     async function fetchData() {
-      fetch("http://192.168.1.16:9000/students/getStudentExam", {
+      fetch("http://localhost:9000/students/getStudentExam", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -34,7 +34,7 @@ function StudentExamPage({ auth }) {
 
   // iscrizione studente all'esame
   const iscrizioneEsame = (esame) => {
-    fetch("http://192.168.1.16:9000/students/signExam", {
+    fetch("http://localhost:9000/students/signExam", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
@@ -60,7 +60,7 @@ function StudentExamPage({ auth }) {
 
   // annulla iscrizione studente al ricevimento
   const annullaIscrizione = (esame) => {
-    fetch("http://192.168.1.16:9000/students/removeExam", {
+    fetch("http://localhost:9000/students/removeExam", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",

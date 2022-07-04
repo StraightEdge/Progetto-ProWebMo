@@ -14,7 +14,7 @@ function PayTaxesPage({ auth, setAuth }) {
 
   useEffect(() => {
     async function fetchData() {
-      fetch("http://192.168.1.16:9000/users/profile", {
+      fetch("http://localhost:9000/users/profile", {
         method: "GET",
         mode: "cors",
         cache: "no-cache",
