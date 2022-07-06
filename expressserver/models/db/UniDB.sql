@@ -1,22 +1,12 @@
 -- phpMyAdmin SQL Dump
 -- version 4.9.2
 -- https://www.phpmyadmin.net/
---
--- Host: localhost
--- Creato il: Mag 29, 2020 alle 08:36
--- Versione del server: 8.0.18
--- Versione PHP: 7.4.0
+
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Database: `UniDB`
@@ -91,9 +81,9 @@ ALTER TABLE `AnagraficaDocenti`
 CREATE TABLE IF NOT EXISTS `Erogazione` (
   `IDIns` int UNSIGNED NOT NULL,
   `IDCorso` int UNSIGNED NOT NULL,
-  `Anno` int UNSIGNED NOT NULL,
   `aScelta` boolean NOT NULL,
-  `Blocco` ENUM('1', '2', '3') NOT NULL,
+  `Blocco` ENUM('1', '2', '3'),
+  `Anno` int UNSIGNED NOT NULL,
   `MatDocente` int UNSIGNED NOT NULL,
   `SchedaTrasparenza` varchar(256),
   PRIMARY KEY (`IDIns`, `IDCorso`)
@@ -118,8 +108,8 @@ CREATE TABLE IF NOT EXISTS `Studenti` (
   `ProvaFinale` boolean NOT NULL DEFAULT FALSE,
   `Email` varchar(100) NOT NULL,
   `Reddito` int UNSIGNED NOT NULL,
-  `PrimaRata` boolean NOT NULL,
-  `SecondaRata` boolean NOT NULL,
+  `PrimaRata` boolean NOT NULL DEFAULT FALSE,
+  `SecondaRata` boolean NOT NULL DEFAULT FALSE,
   PRIMARY KEY (`Matricola`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -243,7 +233,7 @@ ALTER TABLE `IscrizioneRicevimento`
 -- Struttura della tabella `Amministrazione`
 --
 CREATE TABLE IF NOT EXISTS `Amministrazione` (
-  `Matricola` int UNSIGNED NOT NULL,
+  `Matricola` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `Nome` varchar(100) NOT NULL,
   `Cognome` varchar(100) NOT NULL,
   `Genere` ENUM('M', 'F', 'A') NOT NULL,
@@ -274,37 +264,3 @@ ALTER TABLE `Autenticazione`
   ADD CONSTRAINT `Autenticazione_ibfk_1` FOREIGN KEY (`MatStudente`) REFERENCES `Studenti` (`Matricola`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   ADD CONSTRAINT `Autenticazione_ibfk_2` FOREIGN KEY (`MatDocente`) REFERENCES `Docenti` (`Matricola`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   ADD CONSTRAINT `Autenticazione_ibfk_3` FOREIGN KEY (`MatAdmin`) REFERENCES `Amministrazione` (`Matricola`) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
-
--- --------------------------------------------------------
-
---
--- Struttura della tabella `utente`
---
-
-CREATE TABLE IF NOT EXISTS `utente` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nome` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `genere` enum('M','F') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `id_regione` int(11) NOT NULL,
-  `id_provincia` int(11) NOT NULL,
-  `id_comune` int(11) NOT NULL,
-  `data_nascita` date NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Limiti per le tabelle scaricate
---
-
---
--- Limiti per la tabella `autenticazione`
---
-ALTER TABLE `autenticazione`
-  ADD CONSTRAINT `autenticazione_ibfk_1` FOREIGN KEY (`id_utente`) REFERENCES `utente` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
-
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

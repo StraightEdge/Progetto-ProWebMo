@@ -15,7 +15,7 @@ const {
   sign_grade,
 } = require("../controllers/studentController");
 
-/* La rotta /users è vietata */
+/* La rotta /students è vietata */
 router.get("/", function (req, res, next) {
   next(createError(403));
 });

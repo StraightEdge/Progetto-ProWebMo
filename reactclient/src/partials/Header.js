@@ -26,7 +26,7 @@ function Header() {
         </Carousel.Item>
       </Carousel>
       <Container className="d-block d-sm-none bg-white text-white text-center w-100">
-        <img src="/images/logo-unipa.png" alt="UnipaLogo" />
+        <img src="/images/logo-unipa-mobile.png" alt="UnipaLogo" />
       </Container>
     </Container>
   );

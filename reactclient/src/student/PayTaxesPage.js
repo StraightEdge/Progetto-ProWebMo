@@ -91,7 +91,7 @@ function PayTaxesPage({ auth, setAuth }) {
               </tr>
               <tr>
                 <th>Calcolo rata:</th>
-                <th>{importo}</th>
+                <th>{importo} euro</th>
                 <th></th>
               </tr>
             </thead>
