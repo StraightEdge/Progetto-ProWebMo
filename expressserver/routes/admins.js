@@ -19,7 +19,7 @@ const {
   get_profscfu,
 } = require("../controllers/adminController");
 
-/* La rotta /users è vietata */
+/* La rotta /admins è vietata */
 router.get("/", function (req, res, next) {
   next(createError(403));
 });

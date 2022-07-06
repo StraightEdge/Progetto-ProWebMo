@@ -110,7 +110,7 @@ function ProfilePage({ auth, setAuth }) {
             })}
           </tbody>
         </Table>
-        <Button variant="info" onClick={logout}>
+        <Button variant="danger" onClick={logout}>
           Logout
         </Button>
       </Container>

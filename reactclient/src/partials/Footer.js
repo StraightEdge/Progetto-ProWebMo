@@ -1,21 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { Container, ListGroup, Row } from "react-bootstrap";
+import { Col, Container, ListGroup, Row } from "react-bootstrap";
 
 function Footer() {
   return (
     <Container fluid className="bg-light rounded-3 py-3 mt-5">
       <Row>
-        <Container className="col-sm-6 text-justify">
+        <Col sm={6} xs={12} className="text-justify">
           <p className="lead">Università degli Studi di Palermo</p>
           <p>Piazza Marina, 61</p>
           <p>
             90133 - PALERMO Codice Fiscale 80023730825, Partita IVA 00605880822
           </p>
           <p></p>
-        </Container>
-        <Container className="col-sm-6 text-justify">
+        </Col>
+        <Col sm={6} xs={0} className="d-none d-sm-block text-justify">
           <p className="lead">Sviluppatori</p>
           <ListGroup>
             <ListGroup.Item>
@@ -25,19 +25,21 @@ function Footer() {
               </Link>
             </ListGroup.Item>
             <ListGroup.Item>
-              <h5>Calogero</h5>
-              <Link to="mailto:">email1@community.unipa.it</Link>
+              <h5>Calogero Giorgio Curiale</h5>
+              <Link to="mailto:">
+                calogerogiorgio.curiale@community.unipa.it
+              </Link>
             </ListGroup.Item>
             <ListGroup.Item>
-              <h5>Giuseppe</h5>
-              <Link to="mailto:">email2@community.unipa.it</Link>
+              <h5>Giuseppe Aloi</h5>
+              <Link to="mailto:">giuseppe.aloi@community.unipa.it</Link>
             </ListGroup.Item>
             <ListGroup.Item>
-              <h5>Mirko</h5>
-              <Link to="mailto:">email3@community.unipa.it</Link>
+              <h5>Mirko Russo</h5>
+              <Link to="mailto:">mirko.russo01@community.unipa.it</Link>
             </ListGroup.Item>
           </ListGroup>
-        </Container>
+        </Col>
       </Row>
     </Container>
   );

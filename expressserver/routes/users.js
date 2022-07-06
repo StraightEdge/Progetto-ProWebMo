@@ -11,7 +11,7 @@ const {
   get_CdsTeachings,
 } = require("../controllers/userController");
 
-/* La rotta /users è vietata */
+/* La rotta /admins è vietata */
 router.get("/", function (req, res, next) {
   next(createError(403));
 });

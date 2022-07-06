@@ -13,7 +13,7 @@ const {
   upload_scheda,
 } = require("../controllers/professorController");
 
-/* La rotta /users è vietata */
+/* La rotta /professors è vietata */
 router.get("/", function (req, res, next) {
   next(createError(403));
 });
